@@ -1,0 +1,6 @@
+namespace HealthCareSys;
+
+interface IUser
+{
+    
+}
