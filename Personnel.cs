@@ -1,6 +1,6 @@
 namespace HealthCareSys;
 
-class Personnel
+class Personnel : IUser
 {
     
 }
