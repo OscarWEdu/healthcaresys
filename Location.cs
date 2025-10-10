@@ -1,6 +1,6 @@
 namespace HealthCareSys;
 
-class Patient : IUser
+class Location
 {
     
 }
