@@ -1,6 +1,6 @@
 namespace HealthCareSys;
 
-class Admin: IUser
+class Admin: User
 {
     
 }

@@ -1,6 +1,7 @@
 namespace HealthCareSys;
 
-interface IUser
+
+class User
 {
-    
+
 }
