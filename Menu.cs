@@ -1,0 +1,1 @@
+enum Menu {None, Login, Logout, CreateAccount, Main, ManagePermissions, AddLocation, ViewLocationSchedule, ManageRequest, ManageAppointments, ManageJournal, ViewAdminPermissions, CreatePersonnel, ManageRegistration, AssignRegion, RequestPatientStatus }
