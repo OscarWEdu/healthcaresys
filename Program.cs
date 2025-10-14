@@ -8,13 +8,12 @@ User? CurrentUser = null;
 bool is_running = true;
 while (is_running)
 {
-    if (CurrentMenu == Menu.None || CurrentUser == null)
+    if (CurrentMenu == Menu.None || (CurrentUser == null && CurrentMenu != Menu.CreateAccount))
     {
         CurrentMenu = Menu.Login;
     }
     // CurrentMenu = Menu.Main; //Uncomment and change Menu.Main to the menu you want to test
     MenuManager();
-    is_running = false;
 }
 
 //Executes the *Menu Method corresponding with the CurrentMenu variable
@@ -40,9 +39,36 @@ void MenuManager()
     }
 }
 
+//Handles User login
 void LoginMenu()
 {
-    Console.WriteLine("TEst");
+    Console.WriteLine("Enter your username to login to your account, or type \"new\" to create a new account:");
+    string Name = Console.ReadLine();
+    if (string.Equals(Name, "new")) { CurrentMenu = Menu.CreateAccount; }
+    else
+    {
+        Console.WriteLine("Password:");
+        string Pass = Console.ReadLine();
+        CurrentUser = FindUser(Name, Pass);
+        if (CurrentUser == null) { Console.WriteLine("Name or Password is incorrect"); }
+        else { CurrentMenu = Menu.Main; }
+    }
+}
+
+//Fetches a User with a given username and password
+User? FindUser(string Name, string Pass)
+{
+    foreach (User user in Users)
+    {
+        if (user.Username == Name)
+        {
+            if (user.Password == Pass)
+            {
+                return user;
+            }
+        }
+    }
+    return null;
 }
 
 void LogoutMenu()
@@ -50,14 +76,22 @@ void LogoutMenu()
 
 }
 
+//Handles Account Creation
 void CreateAccountMenu()
 {
-
+    Console.Clear();
+    Console.WriteLine("Username:");
+    string Name = Console.ReadLine();
+    Console.WriteLine("Password:");
+    string Pass = Console.ReadLine();
+    CurrentUser = new Patient(Name, Pass);
+    Users.Add(CurrentUser);
+    CurrentMenu = Menu.Main;
 }
 
 void MainMenu()
 {
-
+    Console.WriteLine("Main Menu");
 }
 
 void ManagePermissionsMenu()
@@ -97,7 +131,7 @@ void ViewAdminPermissionsMenu()
 
 void CreatePersonnelMenu()
 {
-    
+
 }
 
 void ManageRegistrationMenu()
@@ -112,5 +146,5 @@ void AssignRegionMenu()
 
 void RequestPatientStatusMenu()
 {
-    
+
 }
