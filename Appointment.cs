@@ -1,6 +1,6 @@
 namespace HealthCareSys;
 
-class Journal
+class Appointment
 {
     
 }

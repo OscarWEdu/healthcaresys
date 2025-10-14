@@ -8,12 +8,22 @@ User? CurrentUser = null;
 bool is_running = true;
 while (is_running)
 {
+    AddTestData();
+
     if (CurrentMenu == Menu.None || (CurrentUser == null && CurrentMenu != Menu.CreateAccount))
     {
         CurrentMenu = Menu.Login;
     }
-    // CurrentMenu = Menu.Main; //Uncomment and change Menu.Main to the menu you want to test
+    CurrentMenu = Menu.ViewAdminPermissions; //Uncomment and change Menu.Main to the menu you want to test
     MenuManager();
+    is_running = false;
+}
+
+void AddTestData()
+{
+    Users.Add(new Admin("admin", "admin"));
+    Users.Add(new Personnel("pers", "pers"));
+    Users.Add(new Patient("pat", "pat"));
 }
 
 //Executes the *Menu Method corresponding with the CurrentMenu variable
@@ -126,7 +136,12 @@ void ManageJournalMenu()
 
 void ViewAdminPermissionsMenu()
 {
-
+    foreach (Admin admin in GetAdmins())
+    {
+        Console.WriteLine(admin.Username + "s Admin Permissions:");
+        admin.ChangePermission(AdminPermission.AddLoc, true);
+        admin.ViewPermissions();
+    }
 }
 
 void CreatePersonnelMenu()
@@ -147,4 +162,37 @@ void AssignRegionMenu()
 void RequestPatientStatusMenu()
 {
 
+}
+
+//Gets all Patients
+List<Patient> GetPatients()
+{
+    List<Patient> Patients = new List<Patient>();
+    foreach (User user in Users)
+    {
+        if (user is Patient) { Patients.Add((Patient)user); }
+    }
+    return Patients;
+}
+
+//Gets all Personnel
+List<Personnel> GetPersonnel()
+{
+    List<Personnel> Personnel = new List<Personnel>();
+    foreach (User user in Users)
+    {
+        if (user is Personnel) { Personnel.Add((Personnel)user); }
+    }
+    return Personnel;
+}
+
+//Gets all Admins
+List<Admin> GetAdmins()
+{
+    List<Admin> Admins = new List<Admin>();
+    foreach (User user in Users)
+    {
+        if (user is Admin) { Admins.Add((Admin)user); }
+    }
+    return Admins;
 }
