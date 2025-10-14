@@ -4,13 +4,18 @@ class Location
 {
     public Availability?[] OpeningHours = new Availability?[7];
     public List<Availability> Exceptions = new List<Availability>();
+    public string Name;
+    public string Address;
+
 
     //Opening hours of a standard workday
     private int _weekdayStart = 7;
     private int _weekdayEnd = 17;
 
-    public Location()
+    public Location(string name, string address)
     {
+        Name = name;
+        Address = address;
         DefaultOpeningHours();
     }
 
