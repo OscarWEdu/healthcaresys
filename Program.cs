@@ -1,10 +1,19 @@
 ﻿using HealthCareSys;
 
+List<User> Users = new List<User>();
+
 Menu CurrentMenu = Menu.None;
+User? CurrentUser = null;
 
 bool is_running = true;
 while (is_running)
 {
+    if (CurrentMenu == Menu.None || CurrentUser == null)
+    {
+        CurrentMenu = Menu.Login;
+    }
+    // CurrentMenu = Menu.Main; //Uncomment and change Menu.Main to the menu you want to test
+    MenuManager();
     is_running = false;
 }
 
@@ -33,7 +42,7 @@ void MenuManager()
 
 void LoginMenu()
 {
-
+    Console.WriteLine("TEst");
 }
 
 void LogoutMenu()
