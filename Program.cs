@@ -14,7 +14,7 @@ while (is_running)
     {
         CurrentMenu = Menu.Login;
     }
-    CurrentMenu = Menu.ViewAdminPermissions; //Uncomment and change Menu.Main to the menu you want to test
+    CurrentMenu = Menu.Logout; //Uncomment and change Menu.Main to the menu you want to test
     MenuManager();
     is_running = false;
 }
@@ -83,7 +83,13 @@ User? FindUser(string Name, string Pass)
 
 void LogoutMenu()
 {
+    //Forget Current User
+    CurrentUser = null;
 
+    //Return to Login Menu
+    CurrentMenu = Menu.Login;
+
+    Console.WriteLine ("You have been logged out!");
 }
 
 //Handles Account Creation
