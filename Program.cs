@@ -87,7 +87,7 @@ void LogoutMenu()
     // Clear the console window for a clean interface.
     Console.Clear();
 
-    // Display a  goodbye message. 
+    // Display a goodbye message. 
     Console.WriteLine("Goodbye! You have been logged out.");
 
 
@@ -118,28 +118,51 @@ void CreateAccountMenu()
 void MainMenu()
 {
     Console.Clear();
-    Console.WriteLine(Welcome!)
+    Console.WriteLine(Welcome!);
 
     if (CurrentUser is Admin)
+    {
+        AdminMainMenu()
+    }
+
+    else if (CurrentUser is Personnel)
+    {
+        PersonnelMainMenu()
+    }
+
+    else if (CurrentUser is Patient)
+    {
+        PatientMainMenu()
+    }
+    else
+
+    {
+        UserMainMenu()
+    }
+
+}
+
+void AdminMainMenu()
+{
     Console.WriteLine("Admin Menu");
     Console.WriteLine("1.Manage Permissions");
     Console.WriteLine("2.View all Permissions");
     Console.WriteLine("3.Create Personnel account");
     Console.WriteLine("4.Manage Patient Registrations");
-    Console.WriteLine("5.Log out"); 
-    String input = Console.ReadLine(); 
+    Console.WriteLine("5.Log out");
+    String input = Console.ReadLine();
 
     switch (input)
-    { 
-      case "1": CurrentMenu = Menu.ManagePermissions; break;
-      case "2": CurrentMenu = Menu.ViewAdminPermissions; break;
-      case "3": CurrentMenu = Menu.CreatePersonnel; break;
-      case "4": CurrentMenu = Menu.ManageRegistration; break;
-      case "5": CurrentMenu = Menu.Logout; break;
-      default : Console.WriteLine("Please pick a vaild option"); break; 
-     }
+    {
+        case "1": CurrentMenu = Menu.ManagePermissions; break;
+        case "2": CurrentMenu = Menu.ViewAdminPermissions; break;
+        case "3": CurrentMenu = Menu.CreatePersonnel; break;
+        case "4": CurrentMenu = Menu.ManageRegistration; break;
+        case "5": CurrentMenu = Menu.Logout; break;
+        default: Console.WriteLine("Please pick a vaild option"); break;
+    }
 }
-else if (CurrentUser is Personnel)
+void PersonnelMainMenu()
 {
     Console.WriteLine("Personnel Menu");
     Console.WriteLine("1.Veiw location schedule");
@@ -160,13 +183,14 @@ else if (CurrentUser is Personnel)
         default: Console.WriteLine("Please pick a vaild option"); break;
     }
 }
-else if (CurrentUser is Patient)
+
+void PatientMainMenu()
 {
     Console.WriteLine("Patient Menu");
-    Console.WriteLine("1.Veiw Journal");
+    Console.WriteLine("1.View Journal");
     Console.WriteLine("2.Request appiontments");
     Console.WriteLine("3.View appiontments");
-    Console.WriteLine("4.Request Patient staus");
+    Console.WriteLine("4.Request Patient status");
     Console.WriteLine("5.Log out");
 
     String input = Console.ReadLine();
@@ -178,19 +202,24 @@ else if (CurrentUser is Patient)
         case "3": CurrentMenu = Menu.ViewLocationSchedule; break;
         case "4": CurrentMenu = Menu.RequestPatientStatus; break;
         case "5": CurrentMenu = Menu.Logout; break;
-        default: Console.WriteLine"Please pick a vaild option"); break;
+        default: Console.WriteLine("Please pick a vaild option"); break;
 
     }
 }
-    else
-
+void UserMainMenu()
 {
-    Console.WriteLine("Error: Unknow user!");
-    CurrentMenu = Menu.Logout;
-   }
+    Console.WriteLine("Unknown user!");
+    Console.WriteLine("1.Request Patient status");
+    Console.WriteLine("2.Log out");
+    String input = Console.ReadLine();
+
+    switch (input)
+    {
+        case "1": CurrentMenu = Menu.RequestPatientStatus; break;
+        case "2": CurrentMenu = Menu.Logout; break;
+        default: Console.WriteLine("Please pick a vaild option"); break;
+    }
 }
-
-
 
     void ManagePermissionsMenu()
     {
