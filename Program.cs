@@ -66,7 +66,7 @@ void MenuManager()
 //Handles User login
 void LoginMenu()
 {
-    Console.WriteLine("Enter your username to login to your account, or type \"new\" to create a new account:");
+    Console.WriteLine("Enter your SSN to login to your account, or type \"new\" to create a new account:");
     string Name = Console.ReadLine();
     if (string.Equals(Name, "new")) { CurrentMenu = Menu.CreateAccount; }
     else
@@ -84,7 +84,7 @@ User? FindUser(string Name, string Pass)
 {
     foreach (User user in Users)
     {
-        if (user.Username == Name)
+        if (user.SSN == Name)
         {
             if (user.Password == Pass)
             {
@@ -127,14 +127,14 @@ void MainMenu()
 void ManagePermissionsMenu()
 {
     Console.WriteLine("Admins:");
-    foreach (Admin user in GetAdmins()) { Console.WriteLine(user.Username); }
+    foreach (Admin user in GetAdmins()) { Console.WriteLine(user.SSN); }
     Console.WriteLine("Type out the username of the Admin you would like to manage:");
     string Username = Console.ReadLine();
     Admin admin = (Admin)GetUserByName(Username);
     if (admin == null) { Console.WriteLine("Invalid Input"); }
     else
     {
-        Console.WriteLine(admin.Username + "s Admin Permissions:");
+        Console.WriteLine(admin.SSN + "s Admin Permissions:");
         bool keep_changing = true;
         while (keep_changing)
         {
@@ -145,7 +145,7 @@ void ManagePermissionsMenu()
             if (AdminPermission.TryParse(PermissionString, out permission)) { admin.ChangePermission(permission, !admin.Permissions[(int)permission]); }
             else { Console.WriteLine("The written permission does not exist"); }
 
-            Console.WriteLine($"Would you like to keep editing {admin.Username}s permissions? (Y/N)");
+            Console.WriteLine($"Would you like to keep editing {admin.SSN}s permissions? (Y/N)");
             if (!YesNoQuestion()) { keep_changing = false; CurrentMenu = Menu.Main; }
         }
     }
@@ -180,7 +180,7 @@ void ViewAdminPermissionsMenu()
 {
     foreach (Admin admin in GetAdmins())
     {
-        Console.WriteLine(admin.Username + "s Admin Permissions:");
+        Console.WriteLine(admin.SSN + "s Admin Permissions:");
         admin.ViewPermissions();
     }
 }
@@ -210,7 +210,7 @@ User? GetUserByName(string username)
 {
     foreach (User user in Users)
     {
-        if (username == user.Username) { return user; }
+        if (username == user.SSN) { return user; }
     }
     return null;
 }
