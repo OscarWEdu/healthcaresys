@@ -27,6 +27,20 @@ void AddTestData()
     Users.Add(new Patient("pat", "pat"));
 }
 
+//Reads user input until the user has answered either yes or no, and returns a bool
+bool YesNoQuestion()
+{
+    bool NotAnswered = true;
+    while (NotAnswered)
+    {
+        string UserInput = Console.ReadLine().ToLower();
+        if (UserInput == "y" || UserInput == "yes") { return true; }
+        if (UserInput == "n" || UserInput == "no") { return false; }
+        Console.WriteLine("Please only type \"yes\" or \"no\"");
+    }
+    return false;
+}
+
 //Executes the *Menu Method corresponding with the CurrentMenu variable
 void MenuManager()
 {
@@ -227,7 +241,6 @@ void ViewAdminPermissionsMenu()
     foreach (Admin admin in GetAdmins())
     {
         Console.WriteLine(admin.Username + "s Admin Permissions:");
-        admin.ChangePermission(AdminPermission.AddLoc, true);
         admin.ViewPermissions();
     }
 }
@@ -250,6 +263,16 @@ void AssignRegionMenu()
 void RequestPatientStatusMenu()
 {
 
+}
+
+//Returns user with matching username, if no match, returns null
+User? GetUserByName(string username)
+{
+    foreach (User user in Users)
+    {
+        if (username == user.Username) { return user; }
+    }
+    return null;
 }
 
 //Gets all Patients
