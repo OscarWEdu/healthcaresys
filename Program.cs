@@ -2,6 +2,10 @@
 using HealthCareSys;
 
 List<User> Users = new List<User>();
+List<Location> Locations = new List<Location>();
+List<Event> UnhandledEvents = new List<Event>();
+List<Event> HandledEvents = new List<Event>();
+List<PatientRequest> PatientRequests = new List<PatientRequest>();
 
 Menu CurrentMenu = Menu.None;
 User? CurrentUser = null;
@@ -15,13 +19,14 @@ while (is_running)
     {
         CurrentMenu = Menu.Login;
     }
-    //CurrentMenu = Menu.Main; //Uncomment and change Menu.Main to the menu you want to test
+    // CurrentMenu = Menu.Login; //Uncomment and change Menu.* to the menu you want to test
     MenuManager();
-    is_running = false;
+    EventHandler();
 }
 
 void AddTestData()
 {
+    Users.Add(new User("user", "user"));
     Users.Add(new Admin("admin", "admin"));
     Users.Add(new Personnel("pers", "pers"));
     Users.Add(new Patient("pat", "pat"));
@@ -67,7 +72,7 @@ void MenuManager()
 //Handles User login
 void LoginMenu()
 {
-    Console.WriteLine("Enter your username to login to your account, or type \"new\" to create a new account:");
+    Console.WriteLine("Enter your SSN to login to your account, or type \"new\" to create a new account:");
     string Name = Console.ReadLine();
     if (string.Equals(Name, "new")) { CurrentMenu = Menu.CreateAccount; }
     else
@@ -85,7 +90,7 @@ User? FindUser(string Name, string Pass)
 {
     foreach (User user in Users)
     {
-        if (user.Username == Name)
+        if (user.SSN == Name)
         {
             if (user.Password == Pass)
             {
@@ -120,11 +125,11 @@ void LogoutMenu()
 void CreateAccountMenu()
 {
     Console.Clear();
-    Console.WriteLine("Username:");
+    Console.WriteLine("SSN:");
     string Name = Console.ReadLine();
     Console.WriteLine("Password:");
     string Pass = Console.ReadLine();
-    CurrentUser = new Patient(Name, Pass);
+    CurrentUser = new User(Name, Pass);
     Users.Add(CurrentUser);
     CurrentMenu = Menu.Main;
 }
@@ -242,12 +247,54 @@ void UserMainMenu()
 
 void AddLocationMenu()
 {
+    //Check if CSV and Data folder exists, otherwise create
+    Location.CheckLocationCSVExists();
 
+    //Requests location details from user, then adds to CSV
+    Location.AddLocationToCSV();
+
+    //Clears Locations list and repopulates with data from CSV
+    ReadLocations();
+
+    CurrentMenu = Menu.Main;
 }
 
 void ViewLocationScheduleMenu()
 {
+    //Clears Locations list and repopulates with data from CSV. Prob better way to do it but works for testing
+    ReadLocations();
 
+    //Displays available locations
+    Console.WriteLine("== Appointments at location ==\n");
+    Console.WriteLine("At location would you like to view booked appointments for?");
+    foreach (Location location in Locations)
+    {
+        Console.WriteLine($"{location.Name}");
+    }
+    // String input from user, has to match Location.Name except for casing
+    Console.WriteLine("Enter the name of the location you wish to view: ");
+    string location_choice = Console.ReadLine();
+
+    // Compares user input againts location.Name, if match display the locations appointments.
+    foreach (Location locations in Locations)
+    {
+        if (location_choice.ToLower() == locations.Name.ToLower())
+        {
+            location_choice = location_choice.ToLower();
+            Console.WriteLine($"{location_choice}'s scheduled appointments");
+            break;
+        }
+        else
+        {
+            //If user input doesn't match any existing Location.Name, user will be returned to choose location
+            Console.WriteLine("Invalid choice, press enter to choose location again...");
+            Console.ReadLine();
+            CurrentMenu = Menu.ViewLocationSchedule;
+            break;
+        }
+
+    }
+    
 }
 
 void ManageRequestMenu()
@@ -269,7 +316,7 @@ void ViewAdminPermissionsMenu()
 {
     foreach (Admin admin in GetAdmins())
     {
-        Console.WriteLine(admin.Username + "s Admin Permissions:");
+        Console.WriteLine(admin.SSN + "s Admin Permissions:");
         admin.ViewPermissions();
     }
 }
@@ -281,7 +328,34 @@ void CreatePersonnelMenu()
 
 void ManageRegistrationMenu()
 {
+    //TODO: Ask User what to do; manage registration, view requests
+    ViewPatientRequests();
+}
 
+void ViewPatientRequests()
+{
+    Console.WriteLine("Patient Requests");
+    foreach (PatientRequest patientRequest in PatientRequests)
+    {
+        Console.WriteLine(patientRequest.SSN);
+    }
+    Console.WriteLine("Type in the SSN of the request you would like to handle");
+    string SSN = Console.ReadLine();
+    User? patient = Users.Find(x => SSN == x.SSN);
+    if (patient is Patient)
+    {
+        Console.WriteLine("Would you like to accept the registration?");
+        if (YesNoQuestion()) { AcceptRegistration((Patient)patient); }
+        PatientRequests.Remove(PatientRequests.Find(x => SSN == x.SSN));
+    }
+}
+
+//Creates a registration event for the given patient
+void AcceptRegistration(Patient patient)
+{
+    Event NewEvent = new Event();
+    NewEvent.UserAdmission(patient.SSN);
+    UnhandledEvents.Add(NewEvent);
 }
 
 void AssignRegionMenu()
@@ -291,7 +365,15 @@ void AssignRegionMenu()
 
 void RequestPatientStatusMenu()
 {
+    //TODO: Display Locations
+    Console.WriteLine("Type the name of the location you would like to register to:");
+    string LocationString = Console.ReadLine();
+    PatientRequests.Add(new PatientRequest(CurrentUser.SSN, LocationString));
+}
 
+void EventHandler()
+{
+    
 }
 
 //Returns user with matching username, if no match, returns null
@@ -299,7 +381,7 @@ User? GetUserByName(string username)
 {
     foreach (User user in Users)
     {
-        if (username == user.Username) { return user; }
+        if (username == user.SSN) { return user; }
     }
     return null;
 }
@@ -335,4 +417,20 @@ List<Admin> GetAdmins()
         if (user is Admin) { Admins.Add((Admin)user); }
     }
     return Admins;
+}
+
+//Reads locations CSV and populates Locations list
+List<Location> ReadLocations()
+{
+    Locations.Clear();
+    string[] lines_locations = File.ReadAllLines(@Path.Combine("Data", "Locations.csv"));
+    if (lines_locations != null | lines_locations.Length != 0)
+    {
+        foreach (string location in lines_locations)
+        {
+            string[] split_lines_locations = location.Split(';');
+            Locations.Add(new Location(split_lines_locations[0], split_lines_locations[1]));
+        }
+    }
+    return Locations;
 }
