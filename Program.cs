@@ -246,8 +246,7 @@ void RequestPatientStatusMenu()
     //TODO: Display Locations
     Console.WriteLine("Type the name of the location you would like to register to:");
     string LocationString = Console.ReadLine();
-    int LocationID = 111; //111 is a dummy number, get location ID using the string
-    PatientRequests.Add(new PatientRequest(CurrentUser.SSN, LocationID));
+    PatientRequests.Add(new PatientRequest(CurrentUser.SSN, LocationString));
 }
 
 void EventHandler()

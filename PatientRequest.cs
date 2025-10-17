@@ -1,6 +1,6 @@
 namespace HealthCareSys;
 
-record PatientRequest(string SSN, int LocationID)
+record PatientRequest(string SSN, String LocationString)
 {
     
 }
