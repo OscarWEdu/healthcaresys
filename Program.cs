@@ -14,7 +14,7 @@ while (is_running)
     {
         CurrentMenu = Menu.Login;
     }
-    CurrentMenu = Menu.ManagePermissions; //Uncomment and change Menu.Main to the menu you want to test
+    CurrentMenu = Menu.Logout; //Uncomment and change Menu.Main to the menu you want to test
     MenuManager();
     is_running = false;
 }
@@ -97,7 +97,7 @@ User? FindUser(string Name, string Pass)
 
 void LogoutMenu()
 {
-     //Forget Current User
+    //Forget Current User
     CurrentUser = null;
 
     //Return to Login Menu
