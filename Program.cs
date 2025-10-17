@@ -4,6 +4,7 @@ List<User> Users = new List<User>();
 List<Location> Locations = new List<Location>();
 List<Event> UnhandledEvents = new List<Event>();
 List<Event> HandledEvents = new List<Event>();
+List<PatientRequest> PatientRequests = new List<PatientRequest>();
 
 Menu CurrentMenu = Menu.None;
 User? CurrentUser = null;
@@ -17,14 +18,14 @@ while (is_running)
     {
         CurrentMenu = Menu.Login;
     }
-
-    // CurrentMenu = Menu.Login; //Uncomment and change Menu.Main to the menu you want to test
+    // CurrentMenu = Menu.Login; //Uncomment and change Menu.* to the menu you want to test
     MenuManager();
     EventHandler();
 }
 
 void AddTestData()
 {
+    Users.Add(new User("user", "user"));
     Users.Add(new Admin("admin", "admin"));
     Users.Add(new Personnel("pers", "pers"));
     Users.Add(new Patient("pat", "pat"));
@@ -248,7 +249,34 @@ void CreatePersonnelMenu()
 
 void ManageRegistrationMenu()
 {
+    //TODO: Ask User what to do; manage registration, view requests
+    ViewPatientRequests();
+}
 
+void ViewPatientRequests()
+{
+    Console.WriteLine("Patient Requests");
+    foreach (PatientRequest patientRequest in PatientRequests)
+    {
+        Console.WriteLine(patientRequest.SSN);
+    }
+    Console.WriteLine("Type in the SSN of the request you would like to handle");
+    string SSN = Console.ReadLine();
+    User? patient = Users.Find(x => SSN == x.SSN);
+    if (patient is Patient)
+    {
+        Console.WriteLine("Would you like to accept the registration?");
+        if (YesNoQuestion()) { AcceptRegistration((Patient)patient); }
+        PatientRequests.Remove(PatientRequests.Find(x => SSN == x.SSN));
+    }
+}
+
+//Creates a registration event for the given patient
+void AcceptRegistration(Patient patient)
+{
+    Event NewEvent = new Event();
+    NewEvent.UserAdmission(patient.SSN);
+    UnhandledEvents.Add(NewEvent);
 }
 
 void AssignRegionMenu()
@@ -258,7 +286,10 @@ void AssignRegionMenu()
 
 void RequestPatientStatusMenu()
 {
-
+    //TODO: Display Locations
+    Console.WriteLine("Type the name of the location you would like to register to:");
+    string LocationString = Console.ReadLine();
+    PatientRequests.Add(new PatientRequest(CurrentUser.SSN, LocationString));
 }
 
 void EventHandler()
