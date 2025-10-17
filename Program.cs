@@ -97,13 +97,22 @@ User? FindUser(string Name, string Pass)
 
 void LogoutMenu()
 {
-    //Forget Current User
+    // Clear the console window for a clean interface.
+    Console.Clear();
+
+    // Display a  goodbye message. 
+    Console.WriteLine("Goodbye! You have been logged out.");
+
+
+    // This effectively logs the user out of the system.
     CurrentUser = null;
 
-    //Return to Login Menu
+    // Set the current menu state to Login.
     CurrentMenu = Menu.Login;
 
-    Console.WriteLine ("You have been logged out!");
+    // Pause the application so the user can read the message.
+    Console.WriteLine("Press Enter to return to the login screen...");
+    Console.ReadLine();
 }
 
 //Handles Account Creation
