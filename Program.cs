@@ -1,6 +1,7 @@
 ﻿using HealthCareSys;
 
 List<User> Users = new List<User>();
+List<Location> Locations = new List<Location>();
 
 Menu CurrentMenu = Menu.None;
 User? CurrentUser = null;
@@ -14,7 +15,7 @@ while (is_running)
     {
         CurrentMenu = Menu.Login;
     }
-    CurrentMenu = Menu.ViewAdminPermissions; //Uncomment and change Menu.Main to the menu you want to test
+    CurrentMenu = Menu.ViewLocationSchedule; //Uncomment and change Menu.Main to the menu you want to test
     MenuManager();
     is_running = false;
 }
@@ -111,12 +112,54 @@ void ManagePermissionsMenu()
 
 void AddLocationMenu()
 {
+    //Check if CSV and Data folder exists, otherwise create
+    Location.CheckLocationCSVExists();
 
+    //Requests location details from user, then adds to CSV
+    Location.AddLocationToCSV();
+
+    //Clears Locations list and repopulates with data from CSV
+    ReadLocations();
+
+    CurrentMenu = Menu.Main;
 }
 
 void ViewLocationScheduleMenu()
 {
+    //Clears Locations list and repopulates with data from CSV. Prob better way to do it but works for testing
+    ReadLocations();
 
+    //Displays available locations
+    Console.WriteLine("== Appointments at location ==\n");
+    Console.WriteLine("At location would you like to view booked appointments for?");
+    foreach (Location location in Locations)
+    {
+        Console.WriteLine($"{location.Name}");
+    }
+    // String input from user, has to match Location.Name except for casing
+    Console.WriteLine("Enter the name of the location you wish to view: ");
+    string location_choice = Console.ReadLine();
+
+    // Compares user input againts location.Name, if match display the locations appointments.
+    foreach (Location locations in Locations)
+    {
+        if (location_choice.ToLower() == locations.Name.ToLower())
+        {
+            location_choice = location_choice.ToLower();
+            Console.WriteLine($"{location_choice}'s scheduled appointments");
+            break;
+        }
+        else
+        {
+            //If user input doesn't match any existing Location.Name, user will be returned to choose location
+            Console.WriteLine("Invalid choice, press enter to choose location again...");
+            Console.ReadLine();
+            CurrentMenu = Menu.ViewLocationSchedule;
+            break;
+        }
+
+    }
+    
 }
 
 void ManageRequestMenu()
@@ -195,4 +238,20 @@ List<Admin> GetAdmins()
         if (user is Admin) { Admins.Add((Admin)user); }
     }
     return Admins;
+}
+
+//Reads locations CSV and populates Locations list
+List<Location> ReadLocations()
+{
+    Locations.Clear();
+    string[] lines_locations = File.ReadAllLines(@Path.Combine("Data", "Locations.csv"));
+    if (lines_locations != null | lines_locations.Length != 0)
+    {
+        foreach (string location in lines_locations)
+        {
+            string[] split_lines_locations = location.Split(';');
+            Locations.Add(new Location(split_lines_locations[0], split_lines_locations[1]));
+        }
+    }
+    return Locations;
 }
