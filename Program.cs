@@ -1,6 +1,8 @@
 ﻿using HealthCareSys;
 
 List<User> Users = new List<User>();
+List<Event> UnhandledEvents = new List<Event>();
+List<Event> HandledEvents = new List<Event>();
 
 Menu CurrentMenu = Menu.None;
 User? CurrentUser = null;
@@ -14,9 +16,9 @@ while (is_running)
     {
         CurrentMenu = Menu.Login;
     }
-    CurrentMenu = Menu.Logout; //Uncomment and change Menu.Main to the menu you want to test
+    // CurrentMenu = Menu.Login; //Uncomment and change Menu.Main to the menu you want to test
     MenuManager();
-    is_running = false;
+    EventHandler();
 }
 
 void AddTestData()
@@ -119,11 +121,11 @@ void LogoutMenu()
 void CreateAccountMenu()
 {
     Console.Clear();
-    Console.WriteLine("Username:");
+    Console.WriteLine("SSN:");
     string Name = Console.ReadLine();
     Console.WriteLine("Password:");
     string Pass = Console.ReadLine();
-    CurrentUser = new Patient(Name, Pass);
+    CurrentUser = new User(Name, Pass);
     Users.Add(CurrentUser);
     CurrentMenu = Menu.Main;
 }
@@ -131,6 +133,7 @@ void CreateAccountMenu()
 void MainMenu()
 {
     Console.WriteLine("Main Menu");
+    is_running = false;
 }
 
 void ManagePermissionsMenu()
@@ -212,6 +215,11 @@ void AssignRegionMenu()
 void RequestPatientStatusMenu()
 {
 
+}
+
+void EventHandler()
+{
+    
 }
 
 //Returns user with matching username, if no match, returns null
