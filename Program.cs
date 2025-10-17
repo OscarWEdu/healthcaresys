@@ -2,6 +2,8 @@
 
 List<User> Users = new List<User>();
 List<Location> Locations = new List<Location>();
+List<Event> UnhandledEvents = new List<Event>();
+List<Event> HandledEvents = new List<Event>();
 
 Menu CurrentMenu = Menu.None;
 User? CurrentUser = null;
@@ -15,9 +17,10 @@ while (is_running)
     {
         CurrentMenu = Menu.Login;
     }
-    CurrentMenu = Menu.ViewLocationSchedule; //Uncomment and change Menu.Main to the menu you want to test
+
+    // CurrentMenu = Menu.Login; //Uncomment and change Menu.Main to the menu you want to test
     MenuManager();
-    is_running = false;
+    EventHandler();
 }
 
 void AddTestData()
@@ -25,6 +28,20 @@ void AddTestData()
     Users.Add(new Admin("admin", "admin"));
     Users.Add(new Personnel("pers", "pers"));
     Users.Add(new Patient("pat", "pat"));
+}
+
+//Reads user input until the user has answered either yes or no, and returns a bool
+bool YesNoQuestion()
+{
+    bool NotAnswered = true;
+    while (NotAnswered)
+    {
+        string UserInput = Console.ReadLine().ToLower();
+        if (UserInput == "y" || UserInput == "yes") { return true; }
+        if (UserInput == "n" || UserInput == "no") { return false; }
+        Console.WriteLine("Please only type \"yes\" or \"no\"");
+    }
+    return false;
 }
 
 //Executes the *Menu Method corresponding with the CurrentMenu variable
@@ -53,7 +70,7 @@ void MenuManager()
 //Handles User login
 void LoginMenu()
 {
-    Console.WriteLine("Enter your username to login to your account, or type \"new\" to create a new account:");
+    Console.WriteLine("Enter your SSN to login to your account, or type \"new\" to create a new account:");
     string Name = Console.ReadLine();
     if (string.Equals(Name, "new")) { CurrentMenu = Menu.CreateAccount; }
     else
@@ -71,7 +88,7 @@ User? FindUser(string Name, string Pass)
 {
     foreach (User user in Users)
     {
-        if (user.Username == Name)
+        if (user.SSN == Name)
         {
             if (user.Password == Pass)
             {
@@ -84,18 +101,33 @@ User? FindUser(string Name, string Pass)
 
 void LogoutMenu()
 {
+    // Clear the console window for a clean interface.
+    Console.Clear();
 
+    // Display a  goodbye message. 
+    Console.WriteLine("Goodbye! You have been logged out.");
+
+
+    // This effectively logs the user out of the system.
+    CurrentUser = null;
+
+    // Set the current menu state to Login.
+    CurrentMenu = Menu.Login;
+
+    // Pause the application so the user can read the message.
+    Console.WriteLine("Press Enter to return to the login screen...");
+    Console.ReadLine();
 }
 
 //Handles Account Creation
 void CreateAccountMenu()
 {
     Console.Clear();
-    Console.WriteLine("Username:");
+    Console.WriteLine("SSN:");
     string Name = Console.ReadLine();
     Console.WriteLine("Password:");
     string Pass = Console.ReadLine();
-    CurrentUser = new Patient(Name, Pass);
+    CurrentUser = new User(Name, Pass);
     Users.Add(CurrentUser);
     CurrentMenu = Menu.Main;
 }
@@ -103,11 +135,34 @@ void CreateAccountMenu()
 void MainMenu()
 {
     Console.WriteLine("Main Menu");
+    is_running = false;
 }
 
 void ManagePermissionsMenu()
 {
+    Console.WriteLine("Admins:");
+    foreach (Admin user in GetAdmins()) { Console.WriteLine(user.SSN); }
+    Console.WriteLine("Type out the username of the Admin you would like to manage:");
+    string Username = Console.ReadLine();
+    Admin admin = (Admin)GetUserByName(Username);
+    if (admin == null) { Console.WriteLine("Invalid Input"); }
+    else
+    {
+        Console.WriteLine(admin.SSN + "s Admin Permissions:");
+        bool keep_changing = true;
+        while (keep_changing)
+        {
+            admin.ViewPermissions();
+            Console.WriteLine("Write the permssion you would like the change, complete with capitalization:");
+            string PermissionString = Console.ReadLine();
+            AdminPermission permission;
+            if (AdminPermission.TryParse(PermissionString, out permission)) { admin.ChangePermission(permission, !admin.Permissions[(int)permission]); }
+            else { Console.WriteLine("The written permission does not exist"); }
 
+            Console.WriteLine($"Would you like to keep editing {admin.SSN}s permissions? (Y/N)");
+            if (!YesNoQuestion()) { keep_changing = false; CurrentMenu = Menu.Main; }
+        }
+    }
 }
 
 void AddLocationMenu()
@@ -181,8 +236,7 @@ void ViewAdminPermissionsMenu()
 {
     foreach (Admin admin in GetAdmins())
     {
-        Console.WriteLine(admin.Username + "s Admin Permissions:");
-        admin.ChangePermission(AdminPermission.AddLoc, true);
+        Console.WriteLine(admin.SSN + "s Admin Permissions:");
         admin.ViewPermissions();
     }
 }
@@ -205,6 +259,21 @@ void AssignRegionMenu()
 void RequestPatientStatusMenu()
 {
 
+}
+
+void EventHandler()
+{
+    
+}
+
+//Returns user with matching username, if no match, returns null
+User? GetUserByName(string username)
+{
+    foreach (User user in Users)
+    {
+        if (username == user.SSN) { return user; }
+    }
+    return null;
 }
 
 //Gets all Patients
