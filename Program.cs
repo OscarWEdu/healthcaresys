@@ -1,4 +1,5 @@
-﻿using HealthCareSys;
+﻿using System.ComponentModel.Design;
+using HealthCareSys;
 
 List<User> Users = new List<User>();
 
@@ -14,7 +15,7 @@ while (is_running)
     {
         CurrentMenu = Menu.Login;
     }
-    CurrentMenu = Menu.Logout; //Uncomment and change Menu.Main to the menu you want to test
+    //CurrentMenu = Menu.Main; //Uncomment and change Menu.Main to the menu you want to test
     MenuManager();
     is_running = false;
 }
@@ -97,13 +98,22 @@ User? FindUser(string Name, string Pass)
 
 void LogoutMenu()
 {
-    //Forget Current User
+    // Clear the console window for a clean interface.
+    Console.Clear();
+
+    // Display a goodbye message. 
+    Console.WriteLine("Goodbye! You have been logged out.");
+
+
+    // This effectively logs the user out of the system.
     CurrentUser = null;
 
-    //Return to Login Menu
+    // Set the current menu state to Login.
     CurrentMenu = Menu.Login;
 
-    Console.WriteLine ("You have been logged out!");
+    // Pause the application so the user can read the message.
+    Console.WriteLine("Press Enter to return to the login screen...");
+    Console.ReadLine();
 }
 
 //Handles Account Creation
@@ -121,35 +131,114 @@ void CreateAccountMenu()
 
 void MainMenu()
 {
-    Console.WriteLine("Main Menu");
+    Console.Clear();
+    Console.WriteLine(Welcome!);
+
+    if (CurrentUser is Admin)
+    {
+        AdminMainMenu()
+    }
+
+    else if (CurrentUser is Personnel)
+    {
+        PersonnelMainMenu()
+    }
+
+    else if (CurrentUser is Patient)
+    {
+        PatientMainMenu()
+    }
+    else
+
+    {
+        UserMainMenu()
+    }
+
 }
 
-void ManagePermissionsMenu()
+void AdminMainMenu()
 {
-    Console.WriteLine("Admins:");
-    foreach (Admin user in GetAdmins()) { Console.WriteLine(user.Username); }
-    Console.WriteLine("Type out the username of the Admin you would like to manage:");
-    string Username = Console.ReadLine();
-    Admin admin = (Admin)GetUserByName(Username);
-    if (admin == null) { Console.WriteLine("Invalid Input"); }
-    else
-    {
-        Console.WriteLine(admin.Username + "s Admin Permissions:");
-        bool keep_changing = true;
-        while (keep_changing)
-        {
-            admin.ViewPermissions();
-            Console.WriteLine("Write the permssion you would like the change, complete with capitalization:");
-            string PermissionString = Console.ReadLine();
-            AdminPermission permission;
-            if (AdminPermission.TryParse(PermissionString, out permission)) { admin.ChangePermission(permission, !admin.Permissions[(int)permission]); }
-            else { Console.WriteLine("The written permission does not exist"); }
+    Console.WriteLine("Admin Menu");
+    Console.WriteLine("1.Manage Permissions");
+    Console.WriteLine("2.View all Permissions");
+    Console.WriteLine("3.Create Personnel account");
+    Console.WriteLine("4.Manage Patient Registrations");
+    Console.WriteLine("5.Log out");
+    String input = Console.ReadLine();
 
-            Console.WriteLine($"Would you like to keep editing {admin.Username}s permissions? (Y/N)");
-            if (!YesNoQuestion()) { keep_changing = false; CurrentMenu = Menu.Main; }
-        }
+    switch (input)
+    {
+        case "1": CurrentMenu = Menu.ManagePermissions; break;
+        case "2": CurrentMenu = Menu.ViewAdminPermissions; break;
+        case "3": CurrentMenu = Menu.CreatePersonnel; break;
+        case "4": CurrentMenu = Menu.ManageRegistration; break;
+        case "5": CurrentMenu = Menu.Logout; break;
+        default: Console.WriteLine("Please pick a vaild option"); break;
     }
 }
+void PersonnelMainMenu()
+{
+    Console.WriteLine("Personnel Menu");
+    Console.WriteLine("1.Veiw location schedule");
+    Console.WriteLine("2.Manage appointsments request");
+    Console.WriteLine("3.Manage appointsments");
+    Console.WriteLine("4.Write in journal");
+    Console.WriteLine("5.Log out");
+
+    String input = Console.ReadLine();
+
+    switch (input)
+    {
+        case "1": CurrentMenu = Menu.ViewLocationSchedule; break;
+        case "2": CurrentMenu = Menu.ManageRequest; break;
+        case "3": CurrentMenu = Menu.ManageAppointments; break;
+        case "4": CurrentMenu = Menu.ManageJournal; break;
+        case "5": CurrentMenu = Menu.Logout; break;
+        default: Console.WriteLine("Please pick a vaild option"); break;
+    }
+}
+
+void PatientMainMenu()
+{
+    Console.WriteLine("Patient Menu");
+    Console.WriteLine("1.View Journal");
+    Console.WriteLine("2.Request appiontments");
+    Console.WriteLine("3.View appiontments");
+    Console.WriteLine("4.Request Patient status");
+    Console.WriteLine("5.Log out");
+
+    String input = Console.ReadLine();
+
+    switch (input)
+    {
+        case "1": CurrentMenu = Menu.ManageJournal; break;
+        case "2": CurrentMenu = Menu.ManageRequest; break;
+        case "3": CurrentMenu = Menu.ViewLocationSchedule; break;
+        case "4": CurrentMenu = Menu.RequestPatientStatus; break;
+        case "5": CurrentMenu = Menu.Logout; break;
+        default: Console.WriteLine("Please pick a vaild option"); break;
+
+    }
+}
+void UserMainMenu()
+{
+    Console.WriteLine("Unknown user!");
+    Console.WriteLine("1.Request Patient status");
+    Console.WriteLine("2.Log out");
+    String input = Console.ReadLine();
+
+    switch (input)
+    {
+        case "1": CurrentMenu = Menu.RequestPatientStatus; break;
+        case "2": CurrentMenu = Menu.Logout; break;
+        default: Console.WriteLine("Please pick a vaild option"); break;
+    }
+}
+
+    void ManagePermissionsMenu()
+    {
+
+    }
 
 void AddLocationMenu()
 {
