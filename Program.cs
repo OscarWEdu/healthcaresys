@@ -132,26 +132,26 @@ void CreateAccountMenu()
 void MainMenu()
 {
     Console.Clear();
-    Console.WriteLine(Welcome!);
+    Console.WriteLine("Welcome!");
 
     if (CurrentUser is Admin)
     {
-        AdminMainMenu()
+        AdminMainMenu();
     }
 
     else if (CurrentUser is Personnel)
     {
-        PersonnelMainMenu()
+        PersonnelMainMenu();
     }
 
     else if (CurrentUser is Patient)
     {
-        PatientMainMenu()
+        PatientMainMenu();
     }
     else
 
     {
-        UserMainMenu()
+        UserMainMenu();
     }
 
 }
@@ -180,8 +180,8 @@ void PersonnelMainMenu()
 {
     Console.WriteLine("Personnel Menu");
     Console.WriteLine("1.Veiw location schedule");
-    Console.WriteLine("2.Manage appointsments request");
-    Console.WriteLine("3.Manage appointsments");
+    Console.WriteLine("2.Manage appointments request");
+    Console.WriteLine("3.Manage appointments");
     Console.WriteLine("4.Write in journal");
     Console.WriteLine("5.Log out");
 
@@ -202,8 +202,8 @@ void PatientMainMenu()
 {
     Console.WriteLine("Patient Menu");
     Console.WriteLine("1.View Journal");
-    Console.WriteLine("2.Request appiontments");
-    Console.WriteLine("3.View appiontments");
+    Console.WriteLine("2.Request appointments");
+    Console.WriteLine("3.View appointments");
     Console.WriteLine("4.Request Patient status");
     Console.WriteLine("5.Log out");
 
@@ -213,7 +213,7 @@ void PatientMainMenu()
     {
         case "1": CurrentMenu = Menu.ManageJournal; break;
         case "2": CurrentMenu = Menu.ManageRequest; break;
-        case "3": CurrentMenu = Menu.ViewLocationSchedule; break;
+        case "3": CurrentMenu = Menu.ManageAppointments; break;
         case "4": CurrentMenu = Menu.RequestPatientStatus; break;
         case "5": CurrentMenu = Menu.Logout; break;
         default: Console.WriteLine("Please pick a vaild option"); break;
@@ -235,10 +235,10 @@ void UserMainMenu()
     }
 }
 
-    void ManagePermissionsMenu()
-    {
+void ManagePermissionsMenu()
+{
 
-    }
+}
 
 void AddLocationMenu()
 {
