@@ -10,6 +10,9 @@ List<PatientRequest> PatientRequests = new List<PatientRequest>();
 Menu CurrentMenu = Menu.None;
 User? CurrentUser = null;
 
+//Check if CSV files and Data folder exists, otherwise create
+DataHandler.CheckFilesExist();
+
 bool is_running = true;
 while (is_running)
 {
@@ -275,9 +278,6 @@ void ManagePermissionsMenu()
 
 void AddLocationMenu()
 {
-    //Check if CSV and Data folder exists, otherwise create
-    Location.CheckLocationCSVExists();
-
     //Requests location details from user, then adds to CSV
     Location.AddLocationToCSV();
 
