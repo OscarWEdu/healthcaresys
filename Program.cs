@@ -2,7 +2,7 @@
 using HealthCareSys;
 
 List<User> Users = new List<User>();
-
+List<Appointment> Appointments = new List<Appointment>();
 Menu CurrentMenu = Menu.None;
 User? CurrentUser = null;
 
@@ -252,12 +252,12 @@ void ViewLocationScheduleMenu()
 
 void ManageRequestMenu()
 {
-
+ 
 }
 
 void ManageAppointmentsMenu()
 {
-
+    
 }
 
 void ManageJournalMenu()
