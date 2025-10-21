@@ -52,7 +52,7 @@ class Location
 
         //Adds location data to Locations.csv
         string line = $"{location_name};{location_address}" + Environment.NewLine;
-        File.AppendAllText(@Path.Combine("Data", "Locations.csv"), line);
+        FileHandler.SaveData("Locations.csv", line);
         Console.WriteLine("New location added sucessfully! Press enter to return to main menu...");
         Console.ReadLine();
     }
