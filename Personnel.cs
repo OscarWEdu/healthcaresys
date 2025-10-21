@@ -19,10 +19,15 @@ record Personnel(string SSN, string Password) : User(SSN, Password)
             Console.WriteLine(Output);
         }
     }
-    
+
     //Returns whether or not the Personnel has the permission in question
     public bool HasPermission(PersonnelPermission permission)
     {
         return Permissions[(int)permission];
+    }
+    
+    public new string Serialize()
+    {
+        return SSN + ';' + Password + ';' + string.Join(",", Permissions);
     }
 }

@@ -451,7 +451,7 @@ List<Admin> GetAdmins()
 List<Location> ReadLocations()
 {
     Locations.Clear();
-    string[] lines_locations = File.ReadAllLines(@Path.Combine("Data", "Locations.csv"));
+    string[] lines_locations = DataHandler.ReadData("Locations.csv");
     if (lines_locations != null | lines_locations.Length != 0)
     {
         foreach (string location in lines_locations)
