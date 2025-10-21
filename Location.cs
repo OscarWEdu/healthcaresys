@@ -38,20 +38,6 @@ class Location
         OpeningHours[Day] = new Availability(Start, End);
     }
 
-    public static void CheckLocationCSVExists()
-    {
-        //Checks if Data dir exists, otherwise create it
-        if (!Directory.Exists("Data"))
-        {
-            Directory.CreateDirectory("Data");
-        }
-        //Checks if Locations.csv file exists, otherwise create it
-        if (!File.Exists(Path.Combine("Data", "Locations.csv")))
-        {
-            File.Create(Path.Combine("Data", "Locations.csv")).Close();
-        }
-    }
-
     public static void AddLocationToCSV()
     {
         //Requests location information input from user
