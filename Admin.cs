@@ -33,7 +33,7 @@ record Admin(string SSN, string Password) : User(SSN, Password)
         if (AssignPermission != AdminPermission.None && HasPermission(AssignPermission)) { return true; }
         else { return false; }
     }
-    
+
     //Returns the needed permission to assign a given permission
     public AdminPermission GetAssignNeeded(AdminPermission permission)
     {
@@ -47,5 +47,10 @@ record Admin(string SSN, string Password) : User(SSN, Password)
             case AdminPermission.ManagePermissions: return AdminPermission.ManagePermissions;
             default: return AdminPermission.None;
         }
+    }
+    
+    public new string Serialize()
+    {
+        return SSN + ';' + Password + ';' + string.Join(",", Permissions);
     }
 }
