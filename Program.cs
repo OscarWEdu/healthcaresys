@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Design;
+using System.Threading.Tasks.Dataflow;
 using HealthCareSys;
 
 List<User> Users = new List<User>();
@@ -294,7 +295,7 @@ void ViewLocationScheduleMenu()
         }
 
     }
-    
+
 }
 
 void ManageRequestMenu()
@@ -309,7 +310,57 @@ void ManageAppointmentsMenu()
 
 void ManageJournalMenu()
 {
+    Console.Clear();
+    if (CurrentUser is Personnel)
+    {
+        Console.WriteLine("Enter the patients SSN");
+        string patientSSN = Console.ReadLine();
+        User user = GetUserByName(patientSSN);
 
+        if (user is not Patient patient)
+        {
+            Console.WriteLine("Patient could not be found, press ENTER to return");
+            Console.ReadLine();
+            CurrentMenu = Menu.Main;
+            return;
+        }
+        Console.WriteLine("Write a title: ");
+        string title = Console.ReadLine();
+
+        Console.WriteLine("Write a description: ");
+        string description = Console.ReadLine();
+
+        patient.Journal.AddEntry(title, description);
+        Console.WriteLine("Journal updated. Press Enter to continue");
+        Console.ReadLine();
+    }
+
+    else if (CurrentUser is Patient patient)
+    {
+        List<JournalEntry> entries = patient.Journal.GetEntries();
+
+        if (entries.Count == 0)
+        {
+            Console.WriteLine("Your journal is empty.");
+        }
+        else
+        {
+            Console.WriteLine("--- Your journal---");
+            foreach (JournalEntry entry in entries)
+            {
+                Console.WriteLine($"\n[{entry.Timestamp}]{entry.Title}\n{entry.Description}");
+            }
+        }
+        Console.WriteLine("Press ENTER to return");
+        Console.ReadLine();
+
+    }
+    else
+    {
+        Console.WriteLine("You dont have access to the journals");
+        Console.ReadLine();
+    }
+    CurrentMenu = Menu.Main;
 }
 
 void ViewAdminPermissionsMenu()
@@ -373,7 +424,7 @@ void RequestPatientStatusMenu()
 
 void EventHandler()
 {
-    
+
 }
 
 //Returns user with matching username, if no match, returns null
