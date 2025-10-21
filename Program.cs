@@ -240,9 +240,37 @@ void UserMainMenu()
     }
 }
 
+//Allows an admin with sufficient permissions edit a given admins permissions
 void ManagePermissionsMenu()
 {
+    Admin CurrentAdmin = (Admin)CurrentUser;
+    Console.WriteLine("Admins:");
+    foreach (Admin user in GetAdmins()) { Console.WriteLine(user.SSN); }
+    Console.WriteLine("Type out the username of the Admin you would like to manage:");
+    string Username = Console.ReadLine();
+    Admin admin = (Admin)GetUserByName(Username);
+    if (admin == null) { Console.WriteLine("Invalid Input"); }
+    else
+    {
+        Console.WriteLine(admin.SSN + "s Admin Permissions:");
+        bool keep_changing = true;
+        while (keep_changing)
+        {
+            admin.ViewPermissions();
+            Console.WriteLine("Write the permission you would like the change, complete with capitalization:");
+            string PermissionString = Console.ReadLine();
+            AdminPermission permission;
+            if (AdminPermission.TryParse(PermissionString, out permission))
+            {
+                if (CurrentAdmin.CanAssign(permission)) { admin.ChangePermission(permission, !admin.Permissions[(int)permission]); }
+                else { Console.WriteLine("You do not have the needed permission to change this admins permission."); }
+            }
+            else { Console.WriteLine("The written permission does not exist"); }
 
+            Console.WriteLine($"Would you like to keep editing {admin.SSN}s permissions? (Y/N)");
+            if (!YesNoQuestion()) { keep_changing = false; CurrentMenu = Menu.Main; }
+        }
+    }
 }
 
 void AddLocationMenu()

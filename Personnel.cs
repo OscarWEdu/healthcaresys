@@ -9,14 +9,20 @@ record Personnel(string SSN, string Password) : User(SSN, Password)
 
     // Replaces permissions with a new bool array
     public void ChangePermissions(bool[] NewPermissions) { Permissions = NewPermissions; }
-    
+
     //Prints Permissions to console
     public void ViewPermissions()
     {
         for (int i = 1; i < Permissions.Length; i++)
         {
-            string Output = (PersonnelPermission) i + ": " + Permissions[i].ToString();
+            string Output = (PersonnelPermission)i + ": " + Permissions[i].ToString();
             Console.WriteLine(Output);
         }
+    }
+    
+    //Returns whether or not the Personnel has the permission in question
+    public bool HasPermission(PersonnelPermission permission)
+    {
+        return Permissions[(int)permission];
     }
 }
