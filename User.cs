@@ -4,6 +4,6 @@ record User(string SSN, string Password)
 {
     public string Serialize()
     {
-        return SSN + ';' + Password;
+        return typeof(User).Name + ';' + SSN + ';' + Password;
     }
 }

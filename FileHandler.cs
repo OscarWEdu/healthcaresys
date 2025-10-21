@@ -2,7 +2,7 @@ namespace HealthCareSys;
 
 using System.Diagnostics;
 
-class DataHandler()
+class FileHandler()
 {
     static string FileDirectory = "Data";
     public static void CheckFilesExist()
@@ -12,12 +12,17 @@ class DataHandler()
         {
             Directory.CreateDirectory(FileDirectory);
         }
-        //Checks if Locations.csv file exists, otherwise create it
-        if (!File.Exists(Path.Combine(FileDirectory, "Locations.csv")))
+        FileExists("Locations.csv");
+        FileExists("Users.csv");
+    }
+
+    //Checks if file of the specified name, otherwise create it
+    private static void FileExists(string FileName)
+    {
+        if (!File.Exists(Path.Combine(FileDirectory, FileName)))
         {
-            File.Create(Path.Combine(FileDirectory, "Locations.csv")).Close();
+            File.Create(Path.Combine(FileDirectory, FileName)).Close();
         }
-        //Add additional CSVs here
     }
 
     /// <summary>

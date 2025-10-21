@@ -51,6 +51,6 @@ record Admin(string SSN, string Password) : User(SSN, Password)
     
     public new string Serialize()
     {
-        return SSN + ';' + Password + ';' + string.Join(",", Permissions);
+        return typeof(Admin).Name + ';' + SSN + ';' + Password + ';' + string.Join(",", Permissions);
     }
 }
