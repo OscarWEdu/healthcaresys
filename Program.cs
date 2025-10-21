@@ -347,6 +347,9 @@ void ViewAdminPermissionsMenu()
         Console.WriteLine(admin.SSN + "s Admin Permissions:");
         admin.ViewPermissions();
     }
+    Console.WriteLine("Press any key to Return to Main Menu");
+    Console.ReadLine();
+    CurrentMenu = Menu.Main;
 }
 
 void CreatePersonnelMenu()
