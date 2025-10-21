@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.Design;
-using System.Threading.Tasks.Dataflow;
 using HealthCareSys;
 
 List<User> Users = new List<User>();
@@ -241,37 +240,9 @@ void UserMainMenu()
     }
 }
 
-//Allows an admin with sufficient permissions edit a given admins permissions
 void ManagePermissionsMenu()
 {
-    Admin CurrentAdmin = (Admin)CurrentUser;
-    Console.WriteLine("Admins:");
-    foreach (Admin user in GetAdmins()) { Console.WriteLine(user.SSN); }
-    Console.WriteLine("Type out the username of the Admin you would like to manage:");
-    string Username = Console.ReadLine();
-    Admin admin = (Admin)GetUserByName(Username);
-    if (admin == null) { Console.WriteLine("Invalid Input"); }
-    else
-    {
-        Console.WriteLine(admin.SSN + "s Admin Permissions:");
-        bool keep_changing = true;
-        while (keep_changing)
-        {
-            admin.ViewPermissions();
-            Console.WriteLine("Write the permission you would like the change, complete with capitalization:");
-            string PermissionString = Console.ReadLine();
-            AdminPermission permission;
-            if (AdminPermission.TryParse(PermissionString, out permission))
-            {
-                if (CurrentAdmin.CanAssign(permission)) { admin.ChangePermission(permission, !admin.Permissions[(int)permission]); }
-                else { Console.WriteLine("You do not have the needed permission to change this admins permission."); }
-            }
-            else { Console.WriteLine("The written permission does not exist"); }
 
-            Console.WriteLine($"Would you like to keep editing {admin.SSN}s permissions? (Y/N)");
-            if (!YesNoQuestion()) { keep_changing = false; CurrentMenu = Menu.Main; }
-        }
-    }
 }
 
 void AddLocationMenu()
@@ -339,18 +310,18 @@ void ManageAppointmentsMenu()
 void ManageJournalMenu()
 {
     Console.Clear();
-    if (CurrentUser is Personnel)
+    if (CurrentUser is Personnel) //checks if User is Personnel to give access to write in journal
     {
         Console.WriteLine("Enter the patients SSN");
         string patientSSN = Console.ReadLine();
-        User user = GetUserByName(patientSSN);
+        User user = GetUserByName(patientSSN); // Gets the right persons journal by thier ssn
 
-        if (user is not Patient patient)
+        if (user is not Patient patient) // If the patient is not found, returns to main menu
         {
             Console.WriteLine("Patient could not be found, press ENTER to return");
             Console.ReadLine();
             CurrentMenu = Menu.Main;
-            return;
+            return; // Exits the method and doesnt continue running.
         }
         Console.WriteLine("Write a title: ");
         string title = Console.ReadLine();
@@ -358,14 +329,14 @@ void ManageJournalMenu()
         Console.WriteLine("Write a description: ");
         string description = Console.ReadLine();
 
-        patient.Journal.AddEntry(title, description);
+        patient.Journal.AddEntry(title, description); // adds the journal entry to the patients journal
         Console.WriteLine("Journal updated. Press Enter to continue");
         Console.ReadLine();
     }
 
-    else if (CurrentUser is Patient patient)
+    else if (CurrentUser is Patient patient) // If a patient is logged in, shows thier journal
     {
-        List<JournalEntry> entries = patient.Journal.GetEntries();
+        List<JournalEntry> entries = patient.Journal.GetEntries(); //get the Journal entriess
 
         if (entries.Count == 0)
         {
@@ -374,16 +345,15 @@ void ManageJournalMenu()
         else
         {
             Console.WriteLine("--- Your journal---");
-            foreach (JournalEntry entry in entries)
+            foreach (JournalEntry entry in entries) // Runs throw journal entries
             {
                 Console.WriteLine($"\n[{entry.Timestamp}]{entry.Title}\n{entry.Description}");
             }
         }
         Console.WriteLine("Press ENTER to return");
         Console.ReadLine();
-
     }
-    else
+    else // If other than personnel or patients is logged in, they dont have access to the journals
     {
         Console.WriteLine("You dont have access to the journals");
         Console.ReadLine();
