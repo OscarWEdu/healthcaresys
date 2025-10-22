@@ -1,6 +1,6 @@
 namespace HealthCareSys;
 
-enum Menu { None, Login, Logout, CreateAccount, Main, ManagePermissions, AddLocation, ViewLocationSchedule, ManageRequest, ManageAppointments, ManageJournal, ViewAdminPermissions, CreatePersonnel, ManageRegistration, AssignRegion, RequestPatientStatus }
+enum Menu { None, Login, Logout, CreateAccount, Main, ManagePermissions, AddLocation, ViewLocationSchedule, ManageRequest, ManageAppointments, ManageJournal, ViewAdminPermissions, CreatePersonnel, ManageRegistration, AssignRegion, RequestPatientStatus, ViewLocations }
 
 class MenuClass
 {
