@@ -648,11 +648,15 @@ void LoadJournals() //Loads Journals
         string title = journalfield[2]; // title of journal entry
         string description = journalfield[3]; // description of journal entry
 
-        Patient? patient = Users.FirstOrDefault(u => u.SSN == ssn && u is Patient) as Patient; // Find the right patient in users
+        Patient? patient = Users.FirstOrDefault(MatchSSNAndIsPatient) as Patient;
 
         if (patient != null)
         {
             patient.Journal.GetEntries().Add(new JournalEntry(timestamp, title, description)); // Adds the entry in the right patient journal
+        }
+        bool MatchSSNAndIsPatient(User user)
+        {
+            return user.SSN == ssn && user is Patient;
         }
     }
 }
