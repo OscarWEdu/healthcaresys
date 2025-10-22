@@ -120,7 +120,7 @@ void LogoutMenu()
     CurrentMenu = Menu.Login;
 
     // Pause the application so the user can read the message.
-    Console.WriteLine("Press Enter to return to the login screen...");
+    Console.WriteLine("Press Any Key to return to the login screen...");
     Console.ReadLine();
 }
 
@@ -315,7 +315,7 @@ void ViewLocationScheduleMenu()
         else
         {
             //If user input doesn't match any existing Location.Name, user will be returned to choose location
-            Console.WriteLine("Invalid choice, press enter to choose location again...");
+            Console.WriteLine("Invalid choice, press Any Key to choose location again...");
             Console.ReadLine();
             CurrentMenu = Menu.ViewLocationSchedule;
             break;
@@ -442,7 +442,7 @@ void ViewAdminPermissionsMenu()
     {
         Console.WriteLine(admin.SSN + "s Admin Permissions:");
         admin.ViewPermissions();
-        Console.WriteLine("Press any key to Return to Main Menu");
+        Console.WriteLine("Press Any Key to Return to Main Menu");
         Console.ReadLine();
         CurrentMenu = Menu.Main;
     }
@@ -503,12 +503,12 @@ void EventHandler()
     
 }
 
-//Returns user with matching username, if no match, returns null
-User? GetUserByName(string username)
+//Returns user with matching ssn, if no match, returns null
+User? GetUserByName(string SSN)
 {
     foreach (User user in Users)
     {
-        if (username == user.SSN) { return user; }
+        if (SSN == user.SSN) { return user; }
     }
     return null;
 }
