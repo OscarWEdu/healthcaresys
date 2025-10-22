@@ -252,12 +252,108 @@ void ViewLocationScheduleMenu()
 
 void ManageRequestMenu()
 {
- 
+    Console.Clear();
+    Console.WriteLine("Appointment Requests");
+
+    // Check if the list of patient requests is empty
+    if (PatientRequests.Count == 0)
+    {
+        
+       Console.WriteLine("No requests.");
+       Console.ReadLine();
+       CurrentMenu = Menu.Main;
+       return;
+    }
+
+    // If there are requests, loop through each one in the PatientRequests list
+    foreach (PatientRequest request in PatientRequests)
+    {
+        // Display the details for each request
+        Console.WriteLine("SSN: " + request.SSN + ", Location: " + request.LocationString);
+    }
+
+    Console.WriteLine("Enter SSN:");
+    string SSN = Console.ReadLine();
+
+    PatientRequest selected = null;
+    foreach (PatientRequest patient in PatientRequests)
+    {
+        if (patient.SSN == SSN)
+        {
+            selected = patient;
+            break; 
+        }
+    }
+    if (selected is not null)
+    {
+        Console.WriteLine("Approve? (Y/N)");
+
+        if (YesNoQuestion())
+        {
+            // If the user answers Yes
+            Console.WriteLine("Enter date (yyyy-MM-dd):");
+            string date = Console.ReadLine();
+            DateTime appointmentDate;
+
+            // Loop until the user gives a valid date
+            while (!DateTime.TryParse(date, out appointmentDate))
+            {
+                Console.WriteLine("Invalid date format. Please use yyyy-MM-dd:");
+                date = Console.ReadLine();
+            }
+
+            Console.WriteLine("Description:");
+            string description = Console.ReadLine();
+
+            Appointments.Add(new Appointment(appointmentDate, selected.LocationString, selected.SSN, description));
+            Console.WriteLine("Appointment created!");
+        }
+        else
+        {
+            Console.WriteLine("Request denied and removed.");
+        }
+
+        PatientRequests.Remove(selected);
+    }
+    else
+    {
+        Console.WriteLine("No request found with that SSN.");
+    }
+
+        Console.ReadLine();
 }
 
 void ManageAppointmentsMenu()
 {
-    
+    Console.Clear();
+    Console.WriteLine("Your Appointments");
+
+    if (CurrentUser is Patient)
+    {
+        // If they are a Patient, loop through the global 'Appointments' list
+        foreach (Appointment appointment in Appointments)
+        {
+            // Check if the appointment's SSN matches the current user's SSN
+            if (appointment.PatientSSN == CurrentUser.SSN)
+            {
+                Console.WriteLine("Date: " + appointment.Date);
+                Console.WriteLine("Location: " + appointment.Location);
+                Console.WriteLine("Description: " + appointment.Description);
+            }
+        }
+    }
+    else if (CurrentUser is Personnel)
+    {
+        // If they are Personnel, loop through the global 'Appointments' list
+        foreach (Appointment appointment in Appointments)
+        {
+            Console.WriteLine("Patient: " + appointment.PatientSSN + ", Date: " + appointment.Date);
+            Console.WriteLine("Location: " + appointment.Location);
+        }
+    }
+
+    Console.ReadLine();
+    CurrentMenu = Menu.Main;
 }
 
 void ManageJournalMenu()
