@@ -2,12 +2,14 @@ namespace HealthCareSys;
 
 record Event
 {
-    private string SSN = null;
-    private EventType eventType = EventType.None;
+    public string? SSN = null;
+    public string? Location = null;
+    public EventType eventType = EventType.None;
 
-    public void UserAdmission(string ssn)
+    public void UserAdmission(string ssn, string location)
     {
         SSN = ssn;
+        Location = location;
         eventType = EventType.Admission;
     }
 }
