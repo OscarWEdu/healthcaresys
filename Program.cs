@@ -448,9 +448,35 @@ void ViewAdminPermissionsMenu()
     }
 }
 
+//Lets an admin with sufficient permissions register a User as a Personnel
 void CreatePersonnelMenu()
 {
+    Admin CurrentAdmin = (Admin)CurrentUser;
+    if (CurrentAdmin.HasPermission(AdminPermission.CreatePersAcc))
+    {
+        Console.WriteLine("Users:");
+        foreach (User user in Users)
+        {
+            if (user is not Admin && user is not Patient && user is not Personnel) { Console.WriteLine(user.SSN); }
+        }
+        Console.WriteLine("Type the name of the user you would like to register as a personnel");
+        string InputString = Console.ReadLine();
+        ChangeUserToPersonnel(Users.Find(x => InputString == x.SSN));
+    }
+    else
+    {
+        Console.WriteLine("You do not have the permission to register personnel.\nPress Any Key to Return to Main Menu");
+        Console.ReadLine();
+        CurrentMenu = Menu.Main;
+    }
+}
 
+//Removes a user and re-adds it typed as a personnel
+void ChangeUserToPersonnel(User user)
+{
+    Personnel personnel = (Personnel)user;
+    Users.Remove(user);
+    Users.Add(personnel);
 }
 
 void ManageRegistrationMenu()
