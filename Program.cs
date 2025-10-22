@@ -708,7 +708,7 @@ void SaveJournals()
             }
         }
     }
-    FileHandler.OverrideData("Journal.csv", journalData); // Replaces old data in csv
+    FileHandler.OverrideData("Journals.csv", journalData); // Replaces old data in csv
 }
 
 void LoadJournals() //Loads Journals
