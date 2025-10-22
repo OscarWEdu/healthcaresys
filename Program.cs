@@ -1,4 +1,5 @@
-﻿using HealthCareSys;
+﻿using System.ComponentModel;
+using HealthCareSys;
 
 List<User> Users = new List<User>();
 List<Appointment> Appointments = new List<Appointment>();
@@ -33,7 +34,7 @@ void AddTestData()
     Users.Add(new User("user", "user"));
     Users.Add(new Admin("admin", "admin"));
     Users.Add(new Personnel("pers", "pers"));
-    Users.Add(new Patient("pat", "pat"));
+    Users.Add(new Patient("pat", "pat", "Hospital"));
     Locations.Add(new Location("Hospital", "Street 1", ERegion.South));
     Locations.Add(new Location("Screening", "Street 2", ERegion.South));
     Locations.Add(new Location("Utanization", "Street 3", ERegion.North));
@@ -530,6 +531,14 @@ void ChangeUserToPersonnel(User user)
     Users.Add(personnel);
 }
 
+//Removes a user and re-adds it typed as a Patient
+void ChangeUserToPatient(User user, string LocationString)
+{
+    Patient patient = (Patient)user;
+    Users.Remove(user);
+    Users.Add(patient);
+}
+
 void ManageRegistrationMenu()
 {
     //TODO: Ask User what to do; manage registration, view requests
@@ -557,9 +566,20 @@ void ViewPatientRequests()
 //Creates a registration event for the given patient
 void AcceptRegistration(Patient patient)
 {
-    Event NewEvent = new Event();
-    NewEvent.UserAdmission(patient.SSN);
-    UnhandledEvents.Add(NewEvent);
+    foreach (PatientRequest request in PatientRequests)
+    {
+        // Display the details for each request
+        Console.WriteLine("SSN: " + request.SSN + ", Location: " + request.LocationString);
+    }
+    Console.WriteLine("Enter SSN of the user you would like to accept:");
+    string SSN = Console.ReadLine();
+    PatientRequest SelectedRequest = PatientRequests.Find(x => SSN == x.SSN);
+    if (SelectedRequest != null)
+    {
+        Event NewEvent = new Event();
+        NewEvent.UserAdmission(SelectedRequest.SSN, SelectedRequest.LocationString);
+        UnhandledEvents.Add(NewEvent);
+    }
 }
 
 void AssignRegionMenu()
@@ -593,7 +613,19 @@ void RequestPatientStatusMenu()
 
 void EventHandler()
 {
-
+    foreach (Event UnhandledEvent in UnhandledEvents)
+    {
+        switch (UnhandledEvent.eventType)
+        {
+            case (EventType.Admission):
+                {
+                    ChangeUserToPatient(GetUserByName(UnhandledEvent.SSN), UnhandledEvent.Location);
+                    break;
+                }
+        }
+    }
+    HandledEvents.AddRange(UnhandledEvents);
+    UnhandledEvents.Clear();
 }
 
 //Returns user with matching ssn, if no match, returns null
