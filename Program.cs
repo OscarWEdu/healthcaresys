@@ -11,13 +11,13 @@ Menu CurrentMenu = Menu.None;
 User? CurrentUser = null;
 
 //Check if CSV files and Data folder exists, otherwise create
-DataHandler.CheckFilesExist();
+FileHandler.CheckFilesExist();
+
+AddTestData();
 
 bool is_running = true;
 while (is_running)
 {
-    AddTestData();
-
     if (CurrentMenu == Menu.None || (CurrentUser == null && CurrentMenu != Menu.CreateAccount))
     {
         CurrentMenu = Menu.Login;
@@ -363,6 +363,9 @@ void ViewAdminPermissionsMenu()
     {
         Console.WriteLine(admin.SSN + "s Admin Permissions:");
         admin.ViewPermissions();
+        Console.WriteLine("Press any key to Return to Main Menu");
+        Console.ReadLine();
+        CurrentMenu = Menu.Main;
     }
 }
 
@@ -468,7 +471,7 @@ List<Admin> GetAdmins()
 List<Location> ReadLocations()
 {
     Locations.Clear();
-    string[] lines_locations = File.ReadAllLines(@Path.Combine("Data", "Locations.csv"));
+    string[] lines_locations = FileHandler.ReadData("Locations.csv");
     if (lines_locations != null | lines_locations.Length != 0)
     {
         foreach (string location in lines_locations)
@@ -478,4 +481,55 @@ List<Location> ReadLocations()
         }
     }
     return Locations;
+}
+
+//Saves all users to file
+void SaveUsers()
+{
+    List<string> UserData = new List<string>();
+    foreach (User user in Users)
+    {
+        UserData.Add(user.Serialize());
+    }
+    FileHandler.OverrideData("Users.csv", UserData);
+}
+
+//Gets all users from file
+void LoadUsers()
+{
+    string[] UserStringArray = FileHandler.ReadData("Users.csv");
+    if (UserStringArray != null | UserStringArray.Length != 0)
+    {
+        Users.Clear();
+        foreach (string UserString in UserStringArray)
+        {
+            string[] UserField = UserString.Split(';');
+            User user = new User(UserField[1], UserField[2]);
+            if (UserField[0] == typeof(User).Name) { Users.Add(user); }
+            if (UserField[0] == typeof(Patient).Name) { Users.Add((Patient)user); }
+            if (UserField[0] == typeof(Personnel).Name)
+            {
+                Personnel personnel = (Personnel)user;
+                personnel.ChangePermissions(ParsePermissions(UserField[3]));
+            }
+            if (UserField[0] == typeof(Admin).Name)
+            {
+                Admin admin = (Admin)user;
+                admin.ChangePermissions(ParsePermissions(UserField[3]));
+            }
+        }
+    }
+}
+
+bool[] ParsePermissions(string RawData)
+{
+    string[] PermsissionStringArray = RawData.Split(",");
+    bool[] Permissions = new bool[PermsissionStringArray.Length];
+    for (int i = 0; i < PermsissionStringArray.Length; i++)
+    {
+        string PermissionString = PermsissionStringArray[i];
+        bool Permission;
+        if (bool.TryParse(PermissionString, out Permission)) { Permissions[i] = Permission; }
+    }
+    return Permissions;
 }
