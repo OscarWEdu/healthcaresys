@@ -14,6 +14,7 @@ User? CurrentUser = null;
 FileHandler.CheckFilesExist();
 
 AddTestData();
+LoadJournals();
 
 bool is_running = true;
 while (is_running)
@@ -112,7 +113,7 @@ void LogoutMenu()
     // Display a goodbye message. 
     Console.WriteLine("Goodbye! You have been logged out.");
 
-
+    SaveJournals(); //Saves the journals when someone logs out
     // This effectively logs the user out of the system.
     CurrentUser = null;
 
@@ -120,7 +121,7 @@ void LogoutMenu()
     CurrentMenu = Menu.Login;
 
     // Pause the application so the user can read the message.
-    Console.WriteLine("Press Any Key to return to the login screen...");
+    Console.WriteLine("Press Enter to return to the login screen...");
     Console.ReadLine();
 }
 
@@ -287,7 +288,7 @@ void ViewLocationScheduleMenu()
         else
         {
             //If user input doesn't match any existing Location.Name, user will be returned to choose location
-            Console.WriteLine("Invalid choice, press Any Key to choose location again...");
+            Console.WriteLine("Invalid choice, press enter to choose location again...");
             Console.ReadLine();
             CurrentMenu = Menu.ViewLocationSchedule;
             break;
@@ -305,11 +306,11 @@ void ManageRequestMenu()
     // Check if the list of patient requests is empty
     if (PatientRequests.Count == 0)
     {
-        
-       Console.WriteLine("No requests.");
-       Console.ReadLine();
-       CurrentMenu = Menu.Main;
-       return;
+
+        Console.WriteLine("No requests.");
+        Console.ReadLine();
+        CurrentMenu = Menu.Main;
+        return;
     }
 
     // If there are requests, loop through each one in the PatientRequests list
@@ -328,7 +329,7 @@ void ManageRequestMenu()
         if (patient.SSN == SSN)
         {
             selected = patient;
-            break; 
+            break;
         }
     }
     if (selected is not null)
@@ -367,7 +368,7 @@ void ManageRequestMenu()
         Console.WriteLine("No request found with that SSN.");
     }
 
-        Console.ReadLine();
+    Console.ReadLine();
 }
 
 void ManageAppointmentsMenu()
@@ -426,11 +427,12 @@ void ManageJournalMenu()
         string description = Console.ReadLine();
 
         patient.Journal.AddEntry(title, description); // adds the journal entry to the patients journal
+        SaveJournals();
         Console.WriteLine("Journal updated. Press Enter to continue");
         Console.ReadLine();
     }
 
-    else if (CurrentUser is Patient patient) // If a patient is logged in, shows thier journal
+    else if (CurrentUser is Patient patient) // If a patient is logged in, shows their journal
     {
         List<JournalEntry> entries = patient.Journal.GetEntries(); //get the Journal entriess
 
@@ -441,7 +443,7 @@ void ManageJournalMenu()
         else
         {
             Console.WriteLine("--- Your journal---");
-            foreach (JournalEntry entry in entries) // Runs throw journal entries
+            foreach (JournalEntry entry in entries) // Runs through journal entries
             {
                 Console.WriteLine($"\n[{entry.Timestamp}]{entry.Title}\n{entry.Description}");
             }
@@ -459,41 +461,15 @@ void ViewAdminPermissionsMenu()
     {
         Console.WriteLine(admin.SSN + "s Admin Permissions:");
         admin.ViewPermissions();
-        Console.WriteLine("Press Any Key to Return to Main Menu");
+        Console.WriteLine("Press any key to Return to Main Menu");
         Console.ReadLine();
         CurrentMenu = Menu.Main;
     }
 }
 
-//Lets an admin with sufficient permissions register a User as a Personnel
 void CreatePersonnelMenu()
 {
-    Admin CurrentAdmin = (Admin)CurrentUser;
-    if (CurrentAdmin.HasPermission(AdminPermission.CreatePersAcc))
-    {
-        Console.WriteLine("Users:");
-        foreach (User user in Users)
-        {
-            if (user is not Admin && user is not Patient && user is not Personnel) { Console.WriteLine(user.SSN); }
-        }
-        Console.WriteLine("Type the name of the user you would like to register as a personnel");
-        string InputString = Console.ReadLine();
-        ChangeUserToPersonnel(Users.Find(x => InputString == x.SSN));
-    }
-    else
-    {
-        Console.WriteLine("You do not have the permission to register personnel.\nPress Any Key to Return to Main Menu");
-        Console.ReadLine();
-        CurrentMenu = Menu.Main;
-    }
-}
 
-//Removes a user and re-adds it typed as a personnel
-void ChangeUserToPersonnel(User user)
-{
-    Personnel personnel = (Personnel)user;
-    Users.Remove(user);
-    Users.Add(personnel);
 }
 
 void ManageRegistrationMenu()
@@ -546,12 +522,12 @@ void EventHandler()
 
 }
 
-//Returns user with matching ssn, if no match, returns null
-User? GetUserByName(string SSN)
+//Returns user with matching username, if no match, returns null
+User? GetUserByName(string username)
 {
     foreach (User user in Users)
     {
-        if (SSN == user.SSN) { return user; }
+        if (username == user.SSN) { return user; }
     }
     return null;
 }
@@ -639,6 +615,45 @@ void LoadUsers()
                 Admin admin = (Admin)user;
                 admin.ChangePermissions(ParsePermissions(UserField[3]));
             }
+        }
+    }
+}
+
+void SaveJournals()
+{
+    List<string> journalData = new List<string>();
+
+    foreach (User user in Users)
+    {
+        if (user is Patient patient)
+        {
+            foreach (JournalEntry entry in patient.Journal.GetEntries())
+            {
+                journalData.Add($"{patient.SSN};{entry.Timestamp};{entry.Title};{entry.Description}");
+            }
+        }
+    }
+    FileHandler.OverrideData("Journal.csv", journalData);
+}
+
+void LoadJournals()
+{
+    string[] journalLines = FileHandler.ReadData("Journals.csv");
+    foreach (string line in journalLines)
+    {
+        string[] journalfield = line.Split(';');
+        if (journalfield.Length < 4) continue;
+
+        string ssn = journalfield[0];
+        DateTime timestamp = DateTime.Parse(journalfield[1]);
+        string title = journalfield[2];
+        string description = journalfield[3];
+
+        Patient? patient = Users.FirstOrDefault(u => u.SSN == ssn && u is Patient) as Patient;
+
+        if (patient != null)
+        {
+            patient.Journal.GetEntries().Add(new JournalEntry(timestamp, title, description));
         }
     }
 }

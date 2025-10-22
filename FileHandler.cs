@@ -14,6 +14,7 @@ class FileHandler()
         }
         FileExists("Locations.csv");
         FileExists("Users.csv");
+        FileExists("Journals.csv");
     }
 
     //Checks if file of the specified name, otherwise create it
