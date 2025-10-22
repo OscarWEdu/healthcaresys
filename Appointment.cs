@@ -1,6 +1,5 @@
 namespace HealthCareSys;
 
-class Appointment
-{
-    
-}
+record Appointment(DateTime Date, string Location, string PatientSSN, string Description);
+
+
