@@ -60,6 +60,7 @@ void MenuManager()
         case (Menu.Main): MainMenu(); break;
         case (Menu.ManagePermissions): ManagePermissionsMenu(); break;
         case (Menu.AddLocation): AddLocationMenu(); break;
+        case (Menu.ViewLocations): ViewLocationsMenu(); break;
         case (Menu.ViewLocationSchedule): ViewLocationScheduleMenu(); break;
         case (Menu.ManageRequest): ManageRequestMenu(); break;
         case (Menu.ManageAppointments): ManageAppointmentsMenu(); break;
@@ -287,6 +288,14 @@ void AddLocationMenu()
     CurrentMenu = Menu.Main;
 }
 
+void ViewLocationsMenu()
+{
+    Location.ViewLocations(Locations);
+    Console.ReadLine();
+    CurrentMenu = Menu.ViewLocations;
+
+}
+
 void ViewLocationScheduleMenu()
 {
     //Clears Locations list and repopulates with data from CSV. Prob better way to do it but works for testing
@@ -301,7 +310,7 @@ void ViewLocationScheduleMenu()
     }
     // String input from user, has to match Location.Name except for casing
     Console.WriteLine("Enter the name of the location you wish to view: ");
-    string location_choice = Console.ReadLine();
+    string? location_choice = Console.ReadLine();
 
     // Compares user input againts location.Name, if match display the locations appointments.
     foreach (Location locations in Locations)
