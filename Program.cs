@@ -353,11 +353,7 @@ void ManageJournalMenu()
         Console.WriteLine("Press ENTER to return");
         Console.ReadLine();
     }
-    else // If other than personnel or patients is logged in, they dont have access to the journals
-    {
-        Console.WriteLine("You dont have access to the journals");
-        Console.ReadLine();
-    }
+
     CurrentMenu = Menu.Main;
 }
 
