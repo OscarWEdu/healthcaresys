@@ -61,7 +61,6 @@ void MenuManager()
         case (Menu.Main): MainMenu(); break;
         case (Menu.ManagePermissions): ManagePermissionsMenu(); break;
         case (Menu.AddLocation): AddLocationMenu(); break;
-        case (Menu.ViewLocations): ViewLocationsMenu(); break;
         case (Menu.ViewLocationSchedule): ViewLocationScheduleMenu(); break;
         case (Menu.ManageRequest): ManageRequestMenu(); break;
         case (Menu.ManageAppointments): ManageAppointmentsMenu(); break;
@@ -261,14 +260,6 @@ void AddLocationMenu()
     CurrentMenu = Menu.Main;
 }
 
-void ViewLocationsMenu()
-{
-    Location.ViewLocations(Locations);
-    Console.ReadLine();
-    CurrentMenu = Menu.ViewLocations;
-
-}
-
 void ViewLocationScheduleMenu()
 {
     //Clears Locations list and repopulates with data from CSV. Prob better way to do it but works for testing
@@ -283,7 +274,7 @@ void ViewLocationScheduleMenu()
     }
     // String input from user, has to match Location.Name except for casing
     Console.WriteLine("Enter the name of the location you wish to view: ");
-    string? location_choice = Console.ReadLine();
+    string location_choice = Console.ReadLine();
 
     // Compares user input againts location.Name, if match display the locations appointments.
     foreach (Location locations in Locations)
@@ -652,16 +643,16 @@ void LoadJournals() //Loads Journals
     {
         string[] journalfield = line.Split(';');
 
-        string ssn = journalfield[0];
-        DateTime timestamp = DateTime.Parse(journalfield[1]);
-        string title = journalfield[2];
-        string description = journalfield[3];
+        string ssn = journalfield[0]; // patients ssn
+        DateTime timestamp = DateTime.Parse(journalfield[1]); // Journal entry time
+        string title = journalfield[2]; // title of journal entry
+        string description = journalfield[3]; // description of journal entry
 
-        Patient? patient = Users.FirstOrDefault(u => u.SSN == ssn && u is Patient) as Patient;
+        Patient? patient = Users.FirstOrDefault(u => u.SSN == ssn && u is Patient) as Patient; // Find the right patient in users
 
         if (patient != null)
         {
-            patient.Journal.GetEntries().Add(new JournalEntry(timestamp, title, description));
+            patient.Journal.GetEntries().Add(new JournalEntry(timestamp, title, description)); // Adds the entry in the right patient journal
         }
     }
 }
