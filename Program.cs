@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Design;
-using HealthCareSys;
+﻿using HealthCareSys;
 
 List<User> Users = new List<User>();
 List<Location> Locations = new List<Location>();
