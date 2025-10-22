@@ -621,28 +621,27 @@ void LoadUsers()
 
 void SaveJournals()
 {
-    List<string> journalData = new List<string>();
+    List<string> journalData = new List<string>(); //creates an empty list with journals
 
     foreach (User user in Users)
     {
         if (user is Patient patient)
         {
-            foreach (JournalEntry entry in patient.Journal.GetEntries())
+            foreach (JournalEntry entry in patient.Journal.GetEntries()) // Checks journal entries in patient journal
             {
                 journalData.Add($"{patient.SSN};{entry.Timestamp};{entry.Title};{entry.Description}");
             }
         }
     }
-    FileHandler.OverrideData("Journal.csv", journalData);
+    FileHandler.OverrideData("Journal.csv", journalData); // Replaces old data in csv
 }
 
-void LoadJournals()
+void LoadJournals() //Loads Journals
 {
-    string[] journalLines = FileHandler.ReadData("Journals.csv");
-    foreach (string line in journalLines)
+    string[] journalLines = FileHandler.ReadData("Journals.csv"); //reads the all the lines in journals.csv
+    foreach (string line in journalLines) // loops all the lines
     {
         string[] journalfield = line.Split(';');
-        if (journalfield.Length < 4) continue;
 
         string ssn = journalfield[0];
         DateTime timestamp = DateTime.Parse(journalfield[1]);
