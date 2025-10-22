@@ -14,6 +14,7 @@ User? CurrentUser = null;
 FileHandler.CheckFilesExist();
 
 AddTestData();
+LoadJournals();
 
 bool is_running = true;
 while (is_running)
@@ -116,6 +117,7 @@ void LogoutMenu()
     // Display a goodbye message. 
     Console.WriteLine("Goodbye! You have been logged out.");
 
+    SaveJournals(); //Saves the journals when someone logs out
 
     // This effectively logs the user out of the system.
     CurrentUser = null;
@@ -322,8 +324,10 @@ void ViewLocationScheduleMenu()
     Location SelectedLocation = Location.SelectLocation(Locations);
 
     // Compares user input againts location.Name, if match display the locations appointments.
+
     Console.WriteLine($"{SelectedLocation.Name}'s scheduled appointments");
     
+
 }
 
 void ManageRequestMenu()
@@ -334,11 +338,11 @@ void ManageRequestMenu()
     // Check if the list of patient requests is empty
     if (PatientRequests.Count == 0)
     {
-        
-       Console.WriteLine("No requests.");
-       Console.ReadLine();
-       CurrentMenu = Menu.Main;
-       return;
+
+        Console.WriteLine("No requests.");
+        Console.ReadLine();
+        CurrentMenu = Menu.Main;
+        return;
     }
 
     // If there are requests, loop through each one in the PatientRequests list
@@ -357,7 +361,7 @@ void ManageRequestMenu()
         if (patient.SSN == SSN)
         {
             selected = patient;
-            break; 
+            break;
         }
     }
     if (selected is not null)
@@ -396,7 +400,7 @@ void ManageRequestMenu()
         Console.WriteLine("No request found with that SSN.");
     }
 
-        Console.ReadLine();
+    Console.ReadLine();
 }
 
 void ManageAppointmentsMenu()
@@ -434,7 +438,53 @@ void ManageAppointmentsMenu()
 
 void ManageJournalMenu()
 {
+    Console.Clear();
+    if (CurrentUser is Personnel) //checks if User is Personnel to give access to write in journal
+    {
+        Console.WriteLine("Enter the patients SSN");
+        string patientSSN = Console.ReadLine();
+        User user = GetUserByName(patientSSN); // Gets the right persons journal by thier ssn
 
+        if (user is not Patient patient) // If the patient is not found, returns to main menu
+        {
+            Console.WriteLine("Patient could not be found, press ENTER to return");
+            Console.ReadLine();
+            CurrentMenu = Menu.Main;
+            return; // Exits the method and doesnt continue running.
+        }
+        Console.WriteLine("Write a title: ");
+        string title = Console.ReadLine();
+
+        Console.WriteLine("Write a description: ");
+        string description = Console.ReadLine();
+
+        patient.Journal.AddEntry(title, description); // adds the journal entry to the patients journal
+        SaveJournals();
+        Console.WriteLine("Journal updated. Press Enter to continue");
+        Console.ReadLine();
+    }
+
+    else if (CurrentUser is Patient patient) // If a patient is logged in, shows their journal
+    {
+        List<JournalEntry> entries = patient.Journal.GetEntries(); //get the Journal entriess
+
+        if (entries.Count == 0)
+        {
+            Console.WriteLine("Your journal is empty.");
+        }
+        else
+        {
+            Console.WriteLine("--- Your journal---");
+            foreach (JournalEntry entry in entries) // Runs through journal entries
+            {
+                Console.WriteLine($"\n[{entry.Timestamp}]{entry.Title}\n{entry.Description}");
+            }
+        }
+        Console.WriteLine("Press ENTER to return");
+        Console.ReadLine();
+    }
+
+    CurrentMenu = Menu.Main;
 }
 
 void ViewAdminPermissionsMenu()
@@ -543,7 +593,7 @@ void RequestPatientStatusMenu()
 
 void EventHandler()
 {
-    
+
 }
 
 //Returns user with matching ssn, if no match, returns null
@@ -640,6 +690,48 @@ void LoadUsers()
                 Admin admin = (Admin)user;
                 admin.ChangePermissions(ParsePermissions(UserField[3]));
             }
+        }
+    }
+}
+
+void SaveJournals()
+{
+    List<string> journalData = new List<string>(); //creates an empty list with journals
+
+    foreach (User user in Users)
+    {
+        if (user is Patient patient)
+        {
+            foreach (JournalEntry entry in patient.Journal.GetEntries()) // Checks journal entries in patient journal
+            {
+                journalData.Add($"{patient.SSN};{entry.Timestamp};{entry.Title};{entry.Description}");
+            }
+        }
+    }
+    FileHandler.OverrideData("Journal.csv", journalData); // Replaces old data in csv
+}
+
+void LoadJournals() //Loads Journals
+{
+    string[] journalLines = FileHandler.ReadData("Journals.csv"); //reads the all the lines in journals.csv
+    foreach (string line in journalLines) // loops all the lines
+    {
+        string[] journalfield = line.Split(';');
+
+        string ssn = journalfield[0]; // patients ssn
+        DateTime timestamp = DateTime.Parse(journalfield[1]); // Journal entry time
+        string title = journalfield[2]; // title of journal entry
+        string description = journalfield[3]; // description of journal entry
+
+        Patient? patient = Users.FirstOrDefault(MatchSSNAndIsPatient) as Patient;
+
+        if (patient != null)
+        {
+            patient.Journal.GetEntries().Add(new JournalEntry(timestamp, title, description)); // Adds the entry in the right patient journal
+        }
+        bool MatchSSNAndIsPatient(User user)
+        {
+            return user.SSN == ssn && user is Patient;
         }
     }
 }
