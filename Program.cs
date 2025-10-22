@@ -33,6 +33,9 @@ void AddTestData()
     Users.Add(new Admin("admin", "admin"));
     Users.Add(new Personnel("pers", "pers"));
     Users.Add(new Patient("pat", "pat"));
+    Locations.Add(new Location("Hospital", "Street 1", ERegion.South));
+    Locations.Add(new Location("Screening", "Street 2", ERegion.South));
+    Locations.Add(new Location("Utanization", "Street 3", ERegion.North));
 }
 
 //Reads user input until the user has answered either yes or no, and returns a bool
@@ -172,7 +175,8 @@ void AdminMainMenu()
     Console.WriteLine("2.View all Permissions");
     Console.WriteLine("3.Create Personnel account");
     Console.WriteLine("4.Manage Patient Registrations");
-    Console.WriteLine("5.Log out");
+    Console.WriteLine("5.Add new location");
+    Console.WriteLine("9.Log out");
     String input = Console.ReadLine();
 
     switch (input)
@@ -181,7 +185,8 @@ void AdminMainMenu()
         case "2": CurrentMenu = Menu.ViewAdminPermissions; break;
         case "3": CurrentMenu = Menu.CreatePersonnel; break;
         case "4": CurrentMenu = Menu.ManageRegistration; break;
-        case "5": CurrentMenu = Menu.Logout; break;
+        case "5": CurrentMenu = Menu.AddLocation; break;
+        case "9": CurrentMenu = Menu.Logout; break;
         default: Console.WriteLine("Please pick a vaild option"); break;
     }
 }
@@ -279,18 +284,28 @@ void ManagePermissionsMenu()
 
 void AddLocationMenu()
 {
-    //Requests location details from user, then adds to CSV
-    Location.AddLocationToCSV();
+    if (CurrentUser is Admin)
+    {
+        //Requests location details from user, then adds to CSV
+        Location.AddLocationToCSV();
 
-    //Clears Locations list and repopulates with data from CSV
-    ReadLocations();
-
+        //Clears Locations list and repopulates with data from CSV
+        ReadLocations();
+    }
+    else
+    {
+        Console.WriteLine("You don't have sufficent permissions to add a location. Press enter to return to main menu");
+        Console.ReadLine();
+        CurrentMenu = Menu.Main;
+    }
+    Console.WriteLine("Press enter to return to main menu...");
+    Console.ReadLine();
     CurrentMenu = Menu.Main;
 }
 
 void ViewLocationsMenu()
 {
-    Location.ViewLocations(Locations);
+    //Location.ViewLocations(Locations);
     Console.ReadLine();
     CurrentMenu = Menu.ViewLocations;
 
@@ -299,38 +314,15 @@ void ViewLocationsMenu()
 void ViewLocationScheduleMenu()
 {
     //Clears Locations list and repopulates with data from CSV. Prob better way to do it but works for testing
-    ReadLocations();
+    //ReadLocations();
 
     //Displays available locations
     Console.WriteLine("== Appointments at location ==\n");
-    Console.WriteLine("At location would you like to view booked appointments for?");
-    foreach (Location location in Locations)
-    {
-        Console.WriteLine($"{location.Name}");
-    }
-    // String input from user, has to match Location.Name except for casing
-    Console.WriteLine("Enter the name of the location you wish to view: ");
-    string? location_choice = Console.ReadLine();
+    Console.WriteLine("Select location to view appointments at:");
+    Location SelectedLocation = Location.SelectLocation(Locations);
 
     // Compares user input againts location.Name, if match display the locations appointments.
-    foreach (Location locations in Locations)
-    {
-        if (location_choice.ToLower() == locations.Name.ToLower())
-        {
-            location_choice = location_choice.ToLower();
-            Console.WriteLine($"{location_choice}'s scheduled appointments");
-            break;
-        }
-        else
-        {
-            //If user input doesn't match any existing Location.Name, user will be returned to choose location
-            Console.WriteLine("Invalid choice, press Any Key to choose location again...");
-            Console.ReadLine();
-            CurrentMenu = Menu.ViewLocationSchedule;
-            break;
-        }
-
-    }
+    Console.WriteLine($"{SelectedLocation.Name}'s scheduled appointments");
     
 }
 
@@ -522,7 +514,23 @@ void AcceptRegistration(Patient patient)
 
 void AssignRegionMenu()
 {
-
+    Console.WriteLine("North Region");
+    foreach (Location location in Locations)
+    {
+        if (location.Region == ERegion.North)
+        {
+            Console.WriteLine($"{location.Name} - Address: {location.Address}");
+        }
+    }
+    Console.WriteLine("\nSouth Region");
+    foreach (Location location in Locations)
+    {
+        if (location.Region == ERegion.South)
+        {
+            Console.WriteLine($"{location.Name} - Address: {location.Address}");
+        }
+    }
+    Console.ReadLine();
 }
 
 void RequestPatientStatusMenu()
@@ -591,7 +599,8 @@ List<Location> ReadLocations()
         foreach (string location in lines_locations)
         {
             string[] split_lines_locations = location.Split(';');
-            Locations.Add(new Location(split_lines_locations[0], split_lines_locations[1]));
+            int.TryParse(split_lines_locations[2], out int RegionInt);
+            Locations.Add(new Location(split_lines_locations[0], split_lines_locations[1], (ERegion)RegionInt));
         }
     }
     return Locations;
