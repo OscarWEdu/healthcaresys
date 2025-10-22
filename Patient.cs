@@ -1,10 +1,9 @@
 namespace HealthCareSys;
 
-class Patient : User
+record Patient(string SSN, string Password) : User(SSN, Password)
 {
-    public Patient(string username, string password)
+    public new string Serialize()
     {
-        Username = username;
-        Password = password;
+        return typeof(Patient).Name + ';' + SSN + ';' + Password;
     }
 }

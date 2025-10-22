@@ -1,7 +1,9 @@
 namespace HealthCareSys;
 
-class User
+record User(string SSN, string Password)
 {
-    public string Username;
-    public string Password;
+    public string Serialize()
+    {
+        return typeof(User).Name + ';' + SSN + ';' + Password;
+    }
 }
