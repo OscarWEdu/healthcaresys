@@ -539,27 +539,32 @@ void ChangeUserToPatient(User user, string LocationString)
     Users.Add(patient);
 }
 
+//Let Admins handle admission requests for patient at a location
 void ManageRegistrationMenu()
 {
-    //TODO: Ask User what to do; manage registration, view requests
-    ViewPatientRequests();
+    Admin CurrentAdmin = (Admin)CurrentUser;
+    if (CurrentAdmin.HasPermission(AdminPermission.AcceptPatient) && CurrentAdmin.HasPermission(AdminPermission.DenyPatient))
+    {
+        ViewPatientRequests();
+        Console.WriteLine("Type in the SSN of the request you would like to handle");
+        string SSN = Console.ReadLine();
+        User? patient = Users.Find(x => SSN == x.SSN);
+        if (patient is Patient)
+        {
+            Console.WriteLine("Would you like to accept the registration?");
+            if (YesNoQuestion()) { AcceptRegistration((Patient)patient); }
+            PatientRequests.Remove(PatientRequests.Find(x => SSN == x.SSN));
+        }
+    }
 }
 
+//Displays patient requests
 void ViewPatientRequests()
 {
     Console.WriteLine("Patient Requests");
     foreach (PatientRequest patientRequest in PatientRequests)
     {
         Console.WriteLine(patientRequest.SSN);
-    }
-    Console.WriteLine("Type in the SSN of the request you would like to handle");
-    string SSN = Console.ReadLine();
-    User? patient = Users.Find(x => SSN == x.SSN);
-    if (patient is Patient)
-    {
-        Console.WriteLine("Would you like to accept the registration?");
-        if (YesNoQuestion()) { AcceptRegistration((Patient)patient); }
-        PatientRequests.Remove(PatientRequests.Find(x => SSN == x.SSN));
     }
 }
 
