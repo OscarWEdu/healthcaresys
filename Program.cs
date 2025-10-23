@@ -75,6 +75,7 @@ void MenuManager()
         case (Menu.ManageRegistration): ManageRegistrationMenu(); break;
         case (Menu.AssignRegion): AssignRegionMenu(); break;
         case (Menu.RequestPatientStatus): RequestPatientStatusMenu(); break;
+        case (Menu.PatientBookAppointment): PatientBookAppointment(); break;
     }
 }
 
@@ -223,6 +224,7 @@ void PatientMainMenu()
     Console.WriteLine("3.View appointments");
     Console.WriteLine("4.Request Patient status");
     Console.WriteLine("5.Log out");
+    Console.WriteLine("6.Book appointment");
 
     String input = Console.ReadLine();
 
@@ -233,6 +235,7 @@ void PatientMainMenu()
         case "3": CurrentMenu = Menu.ManageAppointments; break;
         case "4": CurrentMenu = Menu.RequestPatientStatus; break;
         case "5": CurrentMenu = Menu.Logout; break;
+        case "6": CurrentMenu = Menu.PatientBookAppointment; break;
         default: Console.WriteLine("Please pick a vaild option"); break;
 
     }
@@ -609,6 +612,41 @@ void RequestPatientStatusMenu()
     Console.WriteLine("Type the name of the location you would like to register to:");
     string LocationString = Console.ReadLine();
     PatientRequests.Add(new PatientRequest(CurrentUser.SSN, LocationString));
+}
+
+void PatientBookAppointment()
+{
+    Appointment NewAppointment = null;
+
+    if (CurrentUser is Patient patient)
+    {
+        NewAppointment = AppointmentFunctions.BookAppointment(Locations, patient);
+    }
+    else
+    {
+        Console.WriteLine("You're not logged in as a patient, press enter to return to main menu.");
+        Console.ReadLine();
+        CurrentMenu = Menu.None;
+    }
+
+    if (!(NewAppointment == null))
+    {
+        Appointments.Add(NewAppointment);
+        NewAppointment = null;
+    }
+    else
+    {
+        Console.WriteLine("No appointment has been booked!");
+    }
+
+    foreach (Appointment app in Appointments)
+    {
+        Console.WriteLine($"{app.Date} at {app.Location} cause {app.Description}");
+    }
+    Console.WriteLine("Press enter to return to main menu");
+    Console.ReadLine();
+    CurrentMenu = Menu.None;
+
 }
 
 void EventHandler()
