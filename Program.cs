@@ -616,6 +616,9 @@ void RequestPatientStatusMenu()
     Console.WriteLine("Type the name of the location you would like to register to:");
     string LocationString = Console.ReadLine();
     PatientRequests.Add(new PatientRequest(CurrentUser.SSN, LocationString));
+    Console.WriteLine("Your Request has been registered, press any key to continue");
+    Console.ReadLine();
+    CurrentMenu = Menu.Main;
 }
 
 void PatientBookAppointment()
