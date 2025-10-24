@@ -31,7 +31,10 @@ while (is_running)
 void AddTestData()
 {
     Users.Add(new User("user", "user"));
-    Users.Add(new Admin("admin", "admin"));
+    Admin TestAdmin = new Admin("admin", "admin");
+    TestAdmin.ChangePermission(AdminPermission.ManagePermissions, true);
+    TestAdmin.ChangePermission(AdminPermission.AssignHandleReg, true);
+    Users.Add(TestAdmin);
     Users.Add(new Personnel("pers", "pers"));
     Users.Add(new Patient("pat", "pat", "Hospital"));
     Locations.Add(new Location("Hospital", "Street 1", ERegion.South));
