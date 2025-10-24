@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using HealthCareSys;
+﻿using HealthCareSys;
 
 List<User> Users = new List<User>();
 List<Appointment> Appointments = new List<Appointment>();
